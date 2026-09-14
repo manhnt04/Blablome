@@ -1,0 +1,261 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scripts/ui/blind_select.gd" id="2_blind"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_blind_card"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.1, 0.1, 0.15, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.42, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_boss_card"]
+content_margin_left = 20.0
+content_margin_top = 20.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.18, 0.08, 0.08, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.35, 0.35, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.8, 0.1, 0.1, 0.3)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tag_panel"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.08, 0.08, 0.11, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.25, 0.25, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="BlindSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_blind")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.06, 1)
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 24
+
+[node name="HeaderBar" type="HBoxContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="AnteLabel" type="Label" parent="MainVBox/HeaderBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 22
+text = "Ante 3/8"
+
+[node name="Spacer" type="Control" parent="MainVBox/HeaderBar"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="MoneyLabel" type="Label" parent="MainVBox/HeaderBar"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 22
+text = "🪙 $23"
+
+[node name="CenterArea" type="HBoxContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 24
+alignment = 1
+
+[node name="SmallBlindCard" type="PanelContainer" parent="MainVBox/CenterArea"]
+custom_minimum_size = Vector2(280, 360)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_blind_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/CenterArea/SmallBlindCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="MainVBox/CenterArea/SmallBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "SMALL BLIND"
+horizontal_alignment = 1
+
+[node name="ScoreVal" type="Label" parent="MainVBox/CenterArea/SmallBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 32
+text = "600"
+horizontal_alignment = 1
+
+[node name="Reward" type="Label" parent="MainVBox/CenterArea/SmallBlindCard/VBox"]
+layout_mode = 2
+text = "Thưởng: $3"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="MainVBox/CenterArea/SmallBlindCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlaySmallBtn" type="Button" parent="MainVBox/CenterArea/SmallBlindCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "▶ CHƠI NGAY"
+
+[node name="SkipSmallBtn" type="Button" parent="MainVBox/CenterArea/SmallBlindCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "⏭ BỎ QUA (Charm Tag)"
+
+[node name="BigBlindCard" type="PanelContainer" parent="MainVBox/CenterArea"]
+custom_minimum_size = Vector2(280, 360)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_blind_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/CenterArea/BigBlindCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="MainVBox/CenterArea/BigBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.65, 0.2, 1)
+theme_override_font_sizes/font_size = 24
+text = "BIG BLIND"
+horizontal_alignment = 1
+
+[node name="ScoreVal" type="Label" parent="MainVBox/CenterArea/BigBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 32
+text = "900"
+horizontal_alignment = 1
+
+[node name="Reward" type="Label" parent="MainVBox/CenterArea/BigBlindCard/VBox"]
+layout_mode = 2
+text = "Thưởng: $4"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="MainVBox/CenterArea/BigBlindCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayBigBtn" type="Button" parent="MainVBox/CenterArea/BigBlindCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "▶ CHƠI NGAY"
+
+[node name="SkipBigBtn" type="Button" parent="MainVBox/CenterArea/BigBlindCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "⏭ BỎ QUA (Buffoon Tag)"
+
+[node name="BossBlindCard" type="PanelContainer" parent="MainVBox/CenterArea"]
+custom_minimum_size = Vector2(280, 360)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_boss_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/CenterArea/BossBlindCard"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="MainVBox/CenterArea/BossBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 24
+text = "THE FLAME (BOSS)"
+horizontal_alignment = 1
+
+[node name="ScoreVal" type="Label" parent="MainVBox/CenterArea/BossBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 32
+text = "1200"
+horizontal_alignment = 1
+
+[node name="Debuff" type="Label" parent="MainVBox/CenterArea/BossBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.5, 0.5, 1)
+text = "⚠ Lá Hỏa bị vô hiệu hóa"
+horizontal_alignment = 1
+
+[node name="Reward" type="Label" parent="MainVBox/CenterArea/BossBlindCard/VBox"]
+layout_mode = 2
+text = "Thưởng: $5"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="MainVBox/CenterArea/BossBlindCard/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayBossBtn" type="Button" parent="MainVBox/CenterArea/BossBlindCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "▶ ĐỐI ĐẦU BOSS"
+
+[node name="NoSkipLabel" type="Label" parent="MainVBox/CenterArea/BossBlindCard/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.6, 0.6, 1)
+theme_override_font_sizes/font_size = 12
+text = "KHÔNG THỂ BỎ QUA"
+horizontal_alignment = 1
+
+[node name="TagPanel" type="PanelContainer" parent="MainVBox"]
+custom_minimum_size = Vector2(0, 70)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_tag_panel")
+
+[node name="TagListLabel" type="Label" parent="MainVBox/TagPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.85, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+text = "Tag đang kích hoạt: Chưa có"

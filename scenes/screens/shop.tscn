@@ -1,0 +1,247 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scripts/ui/shop.gd" id="2_shop"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shop_topbar"]
+content_margin_left = 24.0
+content_margin_top = 10.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0.1, 0.1, 0.14, 1)
+border_width_bottom = 2
+border_color = Color(0.25, 0.25, 0.35, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_item_card"]
+content_margin_left = 16.0
+content_margin_top = 16.0
+content_margin_right = 16.0
+content_margin_bottom = 16.0
+bg_color = Color(0.12, 0.12, 0.18, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.35, 0.5, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 6
+
+[node name="ShopScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_shop")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.06, 1)
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="TopBar" type="PanelContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shop_topbar")
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Title" type="Label" parent="MainVBox/TopBar/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 22
+text = "🛒 CỬA HÀNG (SHOP) — ANTE 3"
+
+[node name="Spacer" type="Control" parent="MainVBox/TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ShopMoneyLabel" type="Label" parent="MainVBox/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 22
+text = "🪙 $27"
+
+[node name="ItemsScroll" type="ScrollContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ItemsMargin" type="MarginContainer" parent="MainVBox/ItemsScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+
+[node name="Sections" type="VBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="JokerSectionTitle" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+text = "JOKERS BÁN LẺ"
+
+[node name="JokerCardsRow" type="HBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ShopJoker1" type="PanelContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow"]
+custom_minimum_size = Vector2(200, 180)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_item_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker1"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Name" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker1/VBox"]
+layout_mode = 2
+text = "Tiêu Viêm (🔥)"
+horizontal_alignment = 1
+
+[node name="Desc" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker1/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "+4 Mult cho lá Hỏa"
+horizontal_alignment = 1
+
+[node name="BuyBtn1" type="Button" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker1/VBox"]
+layout_mode = 2
+text = "MUA: $6"
+
+[node name="ShopJoker2" type="PanelContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow"]
+custom_minimum_size = Vector2(200, 180)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_item_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker2"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Name" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker2/VBox"]
+layout_mode = 2
+text = "Ainz (🌑)"
+horizontal_alignment = 1
+
+[node name="Desc" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker2/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "x1.5 Mult nếu có lá Ám"
+horizontal_alignment = 1
+
+[node name="BuyBtn2" type="Button" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/JokerCardsRow/ShopJoker2/VBox"]
+layout_mode = 2
+text = "MUA: $4"
+
+[node name="PackSectionTitle" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+text = "GÓI BÀI (BOOSTER PACKS)"
+
+[node name="PacksRow" type="HBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Pack1" type="PanelContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow"]
+custom_minimum_size = Vector2(200, 160)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_item_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack1"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Name" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack1/VBox"]
+layout_mode = 2
+text = "📦 Buffoon Pack"
+horizontal_alignment = 1
+
+[node name="Desc" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack1/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Chọn 1 trong 3 Joker"
+horizontal_alignment = 1
+
+[node name="BuyPackBtn1" type="Button" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack1/VBox"]
+layout_mode = 2
+text = "MỞ: $4"
+
+[node name="Pack2" type="PanelContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow"]
+custom_minimum_size = Vector2(200, 160)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_item_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack2"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="Name" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack2/VBox"]
+layout_mode = 2
+text = "🔮 Arcana Pack"
+horizontal_alignment = 1
+
+[node name="Desc" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack2/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "Chọn 1 trong 3 Tarot"
+horizontal_alignment = 1
+
+[node name="BuyPackBtn2" type="Button" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/PacksRow/Pack2/VBox"]
+layout_mode = 2
+text = "MỞ: $4"
+
+[node name="BottomActionBar" type="PanelContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shop_topbar")
+
+[node name="ActionHBox" type="HBoxContainer" parent="MainVBox/BottomActionBar"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="RerollBtn" type="Button" parent="MainVBox/BottomActionBar/ActionHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "🔄 REROLL ($5)"
+
+[node name="Spacer" type="Control" parent="MainVBox/BottomActionBar/ActionHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NextBlindBtn" type="Button" parent="MainVBox/BottomActionBar/ActionHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 48)
+layout_mode = 2
+text = "▶ VÀO BLIND TIẾP THEO"

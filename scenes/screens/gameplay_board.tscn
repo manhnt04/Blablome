@@ -1,0 +1,321 @@
+[gd_scene load_steps=7 format=3]
+
+[ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scripts/ui/gameplay_board.gd" id="2_board"]
+[ext_resource type="PackedScene" path="res://scenes/components/scoring_hud.tscn" id="3_score"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
+content_margin_left = 24.0
+content_margin_top = 8.0
+content_margin_right = 24.0
+content_margin_bottom = 8.0
+bg_color = Color(0.101961, 0.101961, 0.141176, 1)
+border_width_bottom = 2
+border_color = Color(0.2, 0.2, 0.28, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_actionbar"]
+content_margin_left = 24.0
+content_margin_top = 10.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0.101961, 0.101961, 0.141176, 1)
+border_width_top = 2
+border_color = Color(0.2, 0.2, 0.28, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+content_margin_left = 32.0
+content_margin_top = 24.0
+content_margin_right = 32.0
+content_margin_bottom = 24.0
+bg_color = Color(0.12, 0.12, 0.17, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.35, 0.7, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.8)
+shadow_size = 20
+
+[node name="GameplayBoard" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_board")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.0392157, 0.0392157, 0.0588235, 1)
+
+[node name="MainLayout" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="TopBar" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_topbar")
+
+[node name="HBox" type="HBoxContainer" parent="MainLayout/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="AnteLabel" type="Label" parent="MainLayout/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Ante 3/8"
+
+[node name="VSep1" type="VSeparator" parent="MainLayout/TopBar/HBox"]
+layout_mode = 2
+
+[node name="BlindLabel" type="Label" parent="MainLayout/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "Small Blind"
+
+[node name="VSep2" type="VSeparator" parent="MainLayout/TopBar/HBox"]
+layout_mode = 2
+
+[node name="ScoreProgressGroup" type="HBoxContainer" parent="MainLayout/TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 12
+
+[node name="TargetPrefix" type="Label" parent="MainLayout/TopBar/HBox/ScoreProgressGroup"]
+layout_mode = 2
+text = "Mục Tiêu:"
+
+[node name="ScoreProgressBar" type="ProgressBar" parent="MainLayout/TopBar/HBox/ScoreProgressGroup"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 20)
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 600.0
+value = 245.0
+show_percentage = false
+
+[node name="TopScoreLabel" type="Label" parent="MainLayout/TopBar/HBox/ScoreProgressGroup"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "245 / 600"
+
+[node name="VSep3" type="VSeparator" parent="MainLayout/TopBar/HBox"]
+layout_mode = 2
+
+[node name="MoneyLabel" type="Label" parent="MainLayout/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 20
+text = "🪙 $23"
+
+[node name="PauseButton" type="Button" parent="MainLayout/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "⏸"
+
+[node name="UpperSection" type="MarginContainer" parent="MainLayout"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_right = 24
+
+[node name="RowSplits" type="HBoxContainer" parent="MainLayout/UpperSection"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="JokerBox" type="VBoxContainer" parent="MainLayout/UpperSection/RowSplits"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="JokerTitle" type="Label" parent="MainLayout/UpperSection/RowSplits/JokerBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "JOKERS (5/5)"
+
+[node name="JokerContainer" type="HBoxContainer" parent="MainLayout/UpperSection/RowSplits/JokerBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ConsumableBox" type="VBoxContainer" parent="MainLayout/UpperSection/RowSplits"]
+layout_mode = 2
+
+[node name="ConsumableTitle" type="Label" parent="MainLayout/UpperSection/RowSplits/ConsumableBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 14
+text = "VẬT PHẨM (0/2)"
+
+[node name="ConsumableContainer" type="HBoxContainer" parent="MainLayout/UpperSection/RowSplits/ConsumableBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MiddleSection" type="VBoxContainer" parent="MainLayout"]
+layout_mode = 2
+size_flags_vertical = 3
+alignment = 1
+theme_override_constants/separation = 12
+
+[node name="ScoringHUD" parent="MainLayout/MiddleSection" instance=ExtResource("3_score")]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="PlayedArea" type="Control" parent="MainLayout/MiddleSection"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+
+[node name="PlayedContainer" type="HBoxContainer" parent="MainLayout/MiddleSection/PlayedArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="HandSection" type="MarginContainer" parent="MainLayout"]
+layout_mode = 2
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 24
+theme_override_constants/margin_bottom = 12
+
+[node name="HandContainer" type="HBoxContainer" parent="MainLayout/HandSection"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ActionBar" type="PanelContainer" parent="MainLayout"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_actionbar")
+
+[node name="BarHBox" type="HBoxContainer" parent="MainLayout/ActionBar"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="CountersGroup" type="VBoxContainer" parent="MainLayout/ActionBar/BarHBox"]
+layout_mode = 2
+alignment = 1
+
+[node name="HandsCounterLabel" type="Label" parent="MainLayout/ActionBar/BarHBox/CountersGroup"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Lượt Đánh: 4/4"
+
+[node name="DiscardsCounterLabel" type="Label" parent="MainLayout/ActionBar/BarHBox/CountersGroup"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 16
+text = "Lượt Đổi: 3/3"
+
+[node name="VSepA" type="VSeparator" parent="MainLayout/ActionBar/BarHBox"]
+layout_mode = 2
+
+[node name="SortGroup" type="HBoxContainer" parent="MainLayout/ActionBar/BarHBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="SortSuitButton" type="Button" parent="MainLayout/ActionBar/BarHBox/SortGroup"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sắp xếp: Hệ"
+
+[node name="SortRankButton" type="Button" parent="MainLayout/ActionBar/BarHBox/SortGroup"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Sắp xếp: Số"
+
+[node name="CenterSpacer" type="Control" parent="MainLayout/ActionBar/BarHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ButtonsGroup" type="HBoxContainer" parent="MainLayout/ActionBar/BarHBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PlayButton" type="Button" parent="MainLayout/ActionBar/BarHBox/ButtonsGroup"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "CHỌN BÀI"
+
+[node name="DiscardButton" type="Button" parent="MainLayout/ActionBar/BarHBox/ButtonsGroup"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.7, 0.7, 1)
+theme_override_font_sizes/font_size = 18
+text = "BỎ LÁ (D) [3]"
+
+[node name="VictoryModal" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -120.0
+offset_right = 220.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="VBox" type="VBoxContainer" parent="VictoryModal"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="VictoryTitle" type="Label" parent="VictoryModal/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "🎉 CHIẾN THẮNG BLIND!"
+horizontal_alignment = 1
+
+[node name="NextShopButton" type="Button" parent="VictoryModal/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 50)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 18
+text = "TIẾP TỤC ĐẾN SHOP ($27)"

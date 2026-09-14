@@ -1,0 +1,102 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/playing_card.gd" id="1_card"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.08, 0.08, 0.12, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.25, 0.35, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="PlayingCard" type="Control"]
+custom_minimum_size = Vector2(110, 160)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 110.0
+offset_bottom = 160.0
+mouse_filter = 0
+script = ExtResource("1_card")
+
+[node name="CardPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(110, 160)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="CardPanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 6
+
+[node name="VBox" type="VBoxContainer" parent="CardPanel/Margin"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="TopRow" type="HBoxContainer" parent="CardPanel/Margin/VBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="RankTopLeft" type="Label" parent="CardPanel/Margin/VBox/TopRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "A"
+
+[node name="SuitTopLeft" type="Label" parent="CardPanel/Margin/VBox/TopRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🔥"
+
+[node name="Spacer" type="Control" parent="CardPanel/Margin/VBox/TopRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="ChipsBadge" type="Label" parent="CardPanel/Margin/VBox/TopRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.65, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "+11"
+
+[node name="CenterSuit" type="Label" parent="CardPanel/Margin/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 28
+text = "🔥
+A"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BottomRow" type="HBoxContainer" parent="CardPanel/Margin/VBox"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 2
+
+[node name="SuitBottomRight" type="Label" parent="CardPanel/Margin/VBox/BottomRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "🔥"
+
+[node name="RankBottomRight" type="Label" parent="CardPanel/Margin/VBox/BottomRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "A"
