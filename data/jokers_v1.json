@@ -1,0 +1,1001 @@
+[
+  {
+    "joker_id": "ly_tieu_dao",
+    "name": "Lý Tiêu Dao",
+    "rarity": "common",
+    "archetype": "flush",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/ly_tieu_dao.png",
+    "icon": "🗡️",
+    "description": "Mỗi lá cùng suit với lá đầu tiên được đánh: +20 Chips.",
+    "trigger": ["on_card_scored"],
+    "condition": {
+      "type": "card_suit_equals",
+      "value": "$first_played_card_suit"
+    },
+    "effect": {
+      "type": "add_chips",
+      "value": 20,
+      "target": "per_matching_card"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "krillin",
+    "name": "Krillin",
+    "rarity": "uncommon",
+    "archetype": "flush",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/krillin.png",
+    "icon": "💥",
+    "description": "Mỗi lần đánh Flush: Joker này +2 Mult vĩnh viễn.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "hand_type_equals",
+      "value": "flush"
+    },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 2,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "natsu",
+    "name": "Natsu",
+    "rarity": "rare",
+    "archetype": "flush",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/natsu.png",
+    "icon": "🐉",
+    "description": "Nếu hand là Flush: x2 Mult. Nếu không: +3 Mult.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "is_flush"
+    },
+    "effect": {
+      "type": "conditional",
+      "if_true": { "type": "add_xmult", "value": 2.0, "target": "flat" },
+      "if_false": { "type": "add_mult", "value": 3, "target": "flat" }
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "tieu_viem_di_hoa",
+    "name": "Tiêu Viêm — Dị Hỏa",
+    "rarity": "uncommon",
+    "archetype": "flush",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/tieu_viem_di_hoa.png",
+    "icon": "🔥",
+    "description": "Khi đánh lá Hỏa: +40 Chips. Sau khi tính điểm, lá đó trở thành Vô Hệ (Wild).",
+    "trigger": ["on_card_scored"],
+    "condition": {
+      "type": "card_suit_equals",
+      "value": "hoa"
+    },
+    "effect": {
+      "type": "add_chips",
+      "value": 40,
+      "target": "per_matching_card"
+    },
+    "post_effect": {
+      "type": "wild_suit",
+      "target": "matching_cards"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "than_bi_nhan",
+    "name": "Thần Bí Nhân",
+    "rarity": "legendary",
+    "archetype": "flush",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/than_bi_nhan.png",
+    "icon": "🌌",
+    "description": "Suit của lá đầu tiên được coi là suit của TẤT CẢ lá trong hand khi xét hand type.",
+    "trigger": ["on_hand_played"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "treat_as_same_rank",
+      "value": false,
+      "suit_override": true,
+      "target": "all_played"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "levi",
+    "name": "Levi",
+    "rarity": "common",
+    "archetype": "face",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/levi.png",
+    "icon": "⚔️",
+    "description": "Mỗi J/Q/K được đánh: +15 Chips.",
+    "trigger": ["on_card_scored"],
+    "condition": {
+      "type": "card_rank_in",
+      "values": [11, 12, 13]
+    },
+    "effect": {
+      "type": "add_chips",
+      "value": 15,
+      "target": "per_matching_card"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "ma_vuong",
+    "name": "Ma Vương",
+    "rarity": "uncommon",
+    "archetype": "face",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/ma_vuong.png",
+    "icon": "👑",
+    "description": "Mỗi K được đánh: Joker này +1 Mult vĩnh viễn.",
+    "trigger": ["on_card_scored"],
+    "condition": {
+      "type": "card_rank_in",
+      "values": [13]
+    },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 1,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "artoria",
+    "name": "Artoria",
+    "rarity": "rare",
+    "archetype": "face",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/artoria.png",
+    "icon": "🛡️",
+    "description": "Nếu hand chứa ≥3 face: x1.5 Mult. Nếu ≥5 face: x2 Mult.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "face_count_gte",
+      "value": 3
+    },
+    "effect": {
+      "type": "conditional",
+      "if_face_count_gte_5": { "type": "add_xmult", "value": 2.0, "target": "flat" },
+      "if_face_count_gte_3": { "type": "add_xmult", "value": 1.5, "target": "flat" }
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "gilgamesh",
+    "name": "Gilgamesh",
+    "rarity": "uncommon",
+    "archetype": "face",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/gilgamesh.png",
+    "icon": "✨",
+    "description": "Mỗi lần discard 1 face card: biến nó thành K trước khi vào discard pile.",
+    "trigger": ["on_discard"],
+    "condition": {
+      "type": "card_rank_in",
+      "values": [11, 12]
+    },
+    "effect": {
+      "type": "transform_card",
+      "target": "discarded_matching",
+      "new_rank": 13
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "vua_anh_linh",
+    "name": "Vua Anh Linh",
+    "rarity": "legendary",
+    "archetype": "face",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/vua_anh_linh.png",
+    "icon": "⚡",
+    "description": "J/Q/K được coi là cùng rank khi tạo hand. J+Q+K = Three of a Kind.",
+    "trigger": ["on_hand_played"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "treat_as_same_rank",
+      "values": [11, 12, 13],
+      "target": "all_played"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "minato",
+    "name": "Minato",
+    "rarity": "common",
+    "archetype": "retrigger",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/minato.png",
+    "icon": "🌪️",
+    "description": "Lá bài đầu tiên được đánh trigger thêm 1 lần.",
+    "trigger": ["on_card_scored"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "retrigger",
+      "value": 1,
+      "target": "first_card"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "rock_lee",
+    "name": "Rock Lee",
+    "rarity": "uncommon",
+    "archetype": "retrigger",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/rock_lee.png",
+    "icon": "🥋",
+    "description": "Mỗi lần 1 card trigger ≥2 lần trong 1 hand: Joker này +1 Mult vĩnh viễn.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "any_card_retriggered",
+      "min_triggers": 2
+    },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 1,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "shadow_clone",
+    "name": "Shadow Clone",
+    "rarity": "rare",
+    "archetype": "retrigger",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/shadow_clone.png",
+    "icon": "👥",
+    "description": "Tất cả card trên tay (không đánh ra) trigger thêm 1 lần khi kết thúc round.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "retrigger",
+      "value": 1,
+      "target": "all_held"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "toc_do",
+    "name": "Tốc Độ",
+    "rarity": "uncommon",
+    "archetype": "retrigger",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/toc_do.png",
+    "icon": "👟",
+    "description": "Card rank 2–5 được đánh trigger thêm 1 lần.",
+    "trigger": ["on_card_scored"],
+    "condition": {
+      "type": "card_rank_in",
+      "values": [2, 3, 4, 5]
+    },
+    "effect": {
+      "type": "retrigger",
+      "value": 1,
+      "target": "per_matching_card"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "kabuto_clock_up",
+    "name": "Kamen Rider Kabuto — Clock Up",
+    "rarity": "legendary",
+    "archetype": "retrigger",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/kabuto.png",
+    "icon": "⏱️",
+    "description": "Tất cả card được đánh trigger thêm 1 lần. Nếu card đã có retrigger từ nguồn khác: +1 lần nữa.",
+    "trigger": ["on_card_scored"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "retrigger",
+      "value": 1,
+      "target": "all_played",
+      "bonus_if_retriggered": 1
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "ainz",
+    "name": "Ainz — Goal of All Life",
+    "rarity": "common",
+    "archetype": "destroy",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/ainz.png",
+    "icon": "💀",
+    "description": "Mỗi card bị destroy trong run: +30 Chips vào hand hiện tại.",
+    "trigger": ["on_card_destroyed"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_chips",
+      "value": 30,
+      "target": "flat"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "tieu_viem_phan_thien",
+    "name": "Tiêu Viêm — Phần Thiên",
+    "rarity": "uncommon",
+    "archetype": "destroy",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/tieu_viem_phan_thien.png",
+    "icon": "🌋",
+    "description": "Mỗi card bị destroy trong run: Joker này +1 Mult vĩnh viễn.",
+    "trigger": ["on_card_destroyed"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 1,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "ma_de",
+    "name": "Ma Đế",
+    "rarity": "rare",
+    "archetype": "destroy",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/ma_de.png",
+    "icon": "👿",
+    "description": "Mỗi face card bị destroy trong run: Joker này +0.1 xMult cộng dồn.",
+    "trigger": ["on_card_destroyed"],
+    "condition": {
+      "type": "card_rank_in",
+      "values": [11, 12, 13]
+    },
+    "effect": {
+      "type": "add_xmult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "xmult",
+      "gain_per_trigger": 0.1,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "sung_jin_woo",
+    "name": "Sung Jin-Woo",
+    "rarity": "uncommon",
+    "archetype": "destroy",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/sung_jin_woo.png",
+    "icon": "🗡️",
+    "description": "Khi đánh lá rank 7–10: destroy nó thay vì đưa vào discard pile.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "card_rank_in",
+      "values": [7, 8, 9, 10]
+    },
+    "effect": {
+      "type": "destroy_card",
+      "target": "matching_played"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "ma_vuong_sat_than",
+    "name": "Ma Vương Sát Thần",
+    "rarity": "legendary",
+    "archetype": "destroy",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/ma_vuong_sat_than.png",
+    "icon": "🩸",
+    "description": "Card bị destroy không mất khỏi deck — biến thành Tro Tàn (0 Chips, +5 Mult khi đánh).",
+    "trigger": ["on_card_destroyed"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "transform_card",
+      "target": "destroyed_cards",
+      "new_type": "tro_tan",
+      "new_rank": 0,
+      "new_suit": null,
+      "new_chips": 0,
+      "new_mult": 5
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "saitama",
+    "name": "Saitama",
+    "rarity": "common",
+    "archetype": "one_card",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/saitama.png",
+    "icon": "👊",
+    "description": "Nếu chỉ đánh đúng 1 lá: lá đó trigger 5 lần. Nếu đánh ≥2 lá: vô hiệu.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "cards_played_equals",
+      "value": 1
+    },
+    "effect": {
+      "type": "retrigger",
+      "value": 4,
+      "target": "first_card"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "deku",
+    "name": "Deku",
+    "rarity": "uncommon",
+    "archetype": "one_card",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/deku.png",
+    "icon": "🥦",
+    "description": "Mỗi hand chỉ đánh 1 lá: Joker này +2 Mult vĩnh viễn.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "cards_played_equals",
+      "value": 1
+    },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 2,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "all_might",
+    "name": "All Might",
+    "rarity": "rare",
+    "archetype": "one_card",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/all_might.png",
+    "icon": "💪",
+    "description": "Nếu hand size ≤ 2: x3 Mult.",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "hand_size_lte",
+      "value": 2
+    },
+    "effect": {
+      "type": "add_xmult",
+      "value": 3.0,
+      "target": "flat"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "focus",
+    "name": "Focus",
+    "rarity": "uncommon",
+    "archetype": "one_card",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/focus.png",
+    "icon": "🎯",
+    "description": "Mỗi lần discard: +1 hand size cho round hiện tại (tối đa +3).",
+    "trigger": ["on_discard"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_hand_size",
+      "value": 1,
+      "target": "flat",
+      "max_stacks": 3,
+      "reset_on": "round_end"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "vo_cuc",
+    "name": "Vô Cực",
+    "rarity": "legendary",
+    "archetype": "one_card",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/vo_cuc.png",
+    "icon": "♾️",
+    "description": "Mỗi lá trên tay KHÔNG được đánh: +1 Mult.",
+    "trigger": ["on_hand_played"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_mult",
+      "value": 1,
+      "target": "per_held_card"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "kazuma",
+    "name": "Kazuma",
+    "rarity": "common",
+    "archetype": "economy",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/kazuma.png",
+    "icon": "🪙",
+    "description": "Cuối round: mỗi $5 hiện có → +5 Chips vào hand tiếp theo.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_chips",
+      "value": 5,
+      "target": "per_5_money"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "senku",
+    "name": "Senku",
+    "rarity": "uncommon",
+    "archetype": "economy",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/senku.png",
+    "icon": "🧪",
+    "description": "Cuối round: mỗi $10 hiện có → Joker này +1 Mult vĩnh viễn.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 1,
+      "per_money": 10,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "thuong_nhan",
+    "name": "Thương Nhân",
+    "rarity": "rare",
+    "archetype": "economy",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/thuong_nhan.png",
+    "icon": "💰",
+    "description": "Mỗi $1 hiện có: x0.01 Mult (tối đa x2).",
+    "trigger": ["on_hand_played"],
+    "condition": {
+      "type": "money_gte",
+      "value": 1
+    },
+    "effect": {
+      "type": "add_xmult",
+      "value": 0.01,
+      "per_money": 1,
+      "max_xmult": 2.0,
+      "target": "flat"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "lucky",
+    "name": "Lucky",
+    "rarity": "uncommon",
+    "archetype": "economy",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/lucky.png",
+    "icon": "🍀",
+    "description": "Mỗi khi nhận tiền (interest, hand bonus, gold card): 1/3 cơ hội nhận gấp đôi.",
+    "trigger": ["on_money_gained"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "gain_money",
+      "value": "duplicate",
+      "chance": 0.3333
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "vua_vang",
+    "name": "Vua Vàng",
+    "rarity": "legendary",
+    "archetype": "economy",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/vua_vang.png",
+    "icon": "👑",
+    "description": "Interest cap tăng từ $5 lên $25. Mỗi $5 interest nhận: +2 Mult.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "modify_interest_cap",
+      "new_cap": 25,
+      "bonus_mult_per_5_interest": 2
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "gojo_vo_han",
+    "name": "Gojo — Vô Hạn",
+    "rarity": "common",
+    "archetype": "held",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/gojo_vo_han.png",
+    "icon": "👁️",
+    "description": "Card Steel trên tay trigger thêm 1 lần khi kết thúc round.",
+    "trigger": ["on_round_end"],
+    "condition": {
+      "type": "card_enhancement_equals",
+      "value": "steel"
+    },
+    "effect": {
+      "type": "retrigger",
+      "value": 1,
+      "target": "held_steel_cards"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "ainz_tri_hoan",
+    "name": "Ainz — Trì Hoãn",
+    "rarity": "uncommon",
+    "archetype": "held",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/ainz_tri_hoan.png",
+    "icon": "⏳",
+    "description": "Cuối round giữ ≥3 card trên tay: Joker này +1 Mult vĩnh viễn.",
+    "trigger": ["on_round_end"],
+    "condition": {
+      "type": "cards_held_gte",
+      "value": 3
+    },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 1,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "thien_su",
+    "name": "Thiền Sư",
+    "rarity": "rare",
+    "archetype": "held",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/thien_su.png",
+    "icon": "🧘",
+    "description": "Cuối round: mỗi K trên tay → x1.5 Mult.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_xmult",
+      "value": 1.5,
+      "target": "per_held_rank_13"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "duong_tam_song_vo_hon",
+    "name": "Đường Tam — Song Võ Hồn",
+    "rarity": "uncommon",
+    "archetype": "held",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/duong_tam_song_vo_hon.png",
+    "icon": "🌱",
+    "description": "Card giữ trên tay qua round: biến thành Steel.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "transform_card",
+      "target": "held_cards",
+      "new_enhancement": "steel"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "than_bi_nhan_an",
+    "name": "Thần Bí Nhân Ẩn",
+    "rarity": "legendary",
+    "archetype": "held",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/than_bi_nhan_an.png",
+    "icon": "🌫️",
+    "description": "Tất cả card trên tay được coi là Steel khi kết thúc round.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "treat_as_steel",
+      "target": "all_held"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "duong_tam",
+    "name": "Đường Tam",
+    "rarity": "common",
+    "archetype": "scale_add",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/duong_tam.png",
+    "icon": "🔱",
+    "description": "Mỗi card thêm vào deck trong run: +10 Chips vào hand hiện tại.",
+    "trigger": ["on_card_added"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_chips",
+      "value": 10,
+      "target": "flat"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "goku_zenkai",
+    "name": "Goku — Zenkai",
+    "rarity": "uncommon",
+    "archetype": "scale_add",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/goku_zenkai.png",
+    "icon": "📈",
+    "description": "Mỗi lần không đủ điểm thắng Blind: Joker này +1 Mult vĩnh viễn. Reset 1 phần khi thắng Boss.",
+    "trigger": ["on_hand_lost"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 1,
+      "max": null,
+      "reset_on": "boss_won",
+      "reset_amount": 5
+    }
+  },
+  {
+    "joker_id": "tien_hoa",
+    "name": "Tiến Hóa",
+    "rarity": "rare",
+    "archetype": "scale_add",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/tien_hoa.png",
+    "icon": "🧬",
+    "description": "Mỗi card thêm vào deck trong run: Joker này +0.1 xMult cộng dồn.",
+    "trigger": ["on_card_added"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_xmult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "xmult",
+      "gain_per_trigger": 0.1,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "phan_than",
+    "name": "Phân Thân",
+    "rarity": "uncommon",
+    "archetype": "scale_add",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/phan_than.png",
+    "icon": "🪞",
+    "description": "Cuối round: copy 1 card ngẫu nhiên trên tay vào deck.",
+    "trigger": ["on_round_end"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "copy_card",
+      "target": "random_held",
+      "destination": "deck"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "lao_to",
+    "name": "Lão Tổ",
+    "rarity": "legendary",
+    "archetype": "scale_add",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/lao_to.png",
+    "icon": "📜",
+    "description": "Mỗi lần reroll trong shop: Joker này +1 Mult vĩnh viễn. Không bao giờ reset.",
+    "trigger": ["on_reroll"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 1,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "ban_sao",
+    "name": "Bản Sao",
+    "rarity": "common",
+    "archetype": "copy",
+    "role": "enabler",
+    "cost": 4,
+    "art": "res://art/jokers/ban_sao.png",
+    "icon": "🎭",
+    "description": "Copy ability của Joker ở slot bên phải.",
+    "trigger": ["passive"],
+    "condition": {
+      "type": "has_joker_right"
+    },
+    "effect": {
+      "type": "copy_joker",
+      "source": "right_slot"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "dong_bo",
+    "name": "Đồng Bộ",
+    "rarity": "uncommon",
+    "archetype": "copy",
+    "role": "scaler",
+    "cost": 6,
+    "art": "res://art/jokers/dong_bo.png",
+    "icon": "🔗",
+    "description": "Mỗi Joker copy được trong run: Joker này +2 Mult vĩnh viễn.",
+    "trigger": ["on_joker_copied"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "add_mult",
+      "value": 0,
+      "target": "flat"
+    },
+    "scaling": {
+      "type": "permanent",
+      "stat": "mult",
+      "gain_per_trigger": 2,
+      "max": null,
+      "reset_on": null
+    }
+  },
+  {
+    "joker_id": "kamen_rider_decade",
+    "name": "Kamen Rider Decade",
+    "rarity": "rare",
+    "archetype": "copy",
+    "role": "payoff",
+    "cost": 8,
+    "art": "res://art/jokers/decade.png",
+    "icon": "💳",
+    "description": "Đầu mỗi round: chọn 1 Joker khác, copy ability của nó trong round này.",
+    "trigger": ["on_round_start"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "copy_joker",
+      "source": "chosen_joker",
+      "duration": "round"
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "guong",
+    "name": "Gương",
+    "rarity": "uncommon",
+    "archetype": "copy",
+    "role": "transformer",
+    "cost": 6,
+    "art": "res://art/jokers/guong.png",
+    "icon": "🪞",
+    "description": "Joker ở slot giữa copy ability của cả slot trái và slot phải.",
+    "trigger": ["passive"],
+    "condition": {
+      "type": "has_joker_left_and_right",
+      "self_slot": "middle"
+    },
+    "effect": {
+      "type": "copy_joker",
+      "source": ["left_slot", "right_slot"]
+    },
+    "scaling": null
+  },
+  {
+    "joker_id": "ohma_zi_o_king_of_time",
+    "name": "Ohma Zi-O — King of Time",
+    "rarity": "legendary",
+    "archetype": "copy",
+    "role": "rule_breaker",
+    "cost": 10,
+    "art": "res://art/jokers/ohma_zi_o.png",
+    "icon": "👑",
+    "description": "Mỗi Joker bán: lưu ability vào Ohma Zi-O. Khi đánh Boss: trigger lại ability của 3 Joker gần nhất đã bán.",
+    "trigger": ["on_joker_sold", "on_boss_start"],
+    "condition": { "type": "always" },
+    "effect": {
+      "type": "store_effect",
+      "store_from": "sold_joker",
+      "replay_on": "boss_start",
+      "replay_count": 3,
+      "replay_order": "most_recent"
+    },
+    "scaling": null
+  }
+]

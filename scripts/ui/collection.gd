@@ -1,21 +1,11 @@
 class_name CollectionScreen
 extends Control
 
+const JokerDB = preload("res://scripts/core/joker_db.gd")
+
 signal back_requested()
 
-const ITEMS = [
-	{"name": "Tiêu Viêm", "icon": "🔥", "rarity": "Uncommon", "desc": "Mỗi lá Hỏa tính điểm: +4 Mult", "unlock": "Mở khóa mặc định", "owned": true},
-	{"name": "Ainz Ooal Gown", "icon": "🌑", "rarity": "Rare", "desc": "Nếu có lá Ám: x1.5 Mult tổng", "unlock": "Mở khóa mặc định", "owned": true},
-	{"name": "Saitama", "icon": "👊", "rarity": "Legendary", "desc": "Nếu chỉ đánh đúng 1 lá duy nhất: x3 Mult", "unlock": "Đạt 1,000 điểm trong 1 hand", "owned": true},
-	{"name": "Levi", "icon": "⚔️", "rarity": "Uncommon", "desc": "+30 Chips cho mỗi lá Phong", "unlock": "Mở khóa mặc định", "owned": true},
-	{"name": "Goku", "icon": "📈", "rarity": "Rare", "desc": "+10 Mult tăng dần sau mỗi ván thắng", "unlock": "Thắng 3 Blind liên tiếp", "owned": true},
-	{"name": "Gojo Satoru", "icon": "👁️", "rarity": "Legendary", "desc": "Kháng mọi debuff của Boss Blind", "unlock": "Thắng Ante 8 với ít nhất $50", "owned": true},
-	{"name": "Ma Đế Trác Phàm", "icon": "👿", "rarity": "Legendary", "desc": "Mỗi lá Ám tính điểm nhân đôi Mult hiện tại", "unlock": "Vượt qua Ante 8 lần đầu tiên", "owned": false},
-	{"name": "Đường Tam Hải Thần", "icon": "🔱", "rarity": "Rare", "desc": "Nhận thêm $1 mỗi lần đổi bài (Discard)", "unlock": "Thực hiện 20 lần đổi bài", "owned": false},
-	{"name": "Sung Jin-Woo", "icon": "🗡️", "rarity": "Legendary", "desc": "Hồi sinh 1 lần khi điểm không đạt yêu cầu Blind", "unlock": "Thua ở Boss Blind Ante 8", "owned": false},
-	{"name": "Lão Tổ Trùng Sinh", "icon": "✨", "rarity": "Rare", "desc": "Tất cả các lá bài được coi là cùng 1 hệ", "unlock": "Đánh ra 5 lá Đồng Chất 10 lần", "owned": false}
-]
-
+var all_items: Array = []
 var current_filter: String = "All"
 
 @onready var grid_container: GridContainer = %GridContainer
@@ -38,8 +28,10 @@ func _ready() -> void:
 	%FilterRare.pressed.connect(func(): _apply_filter("Rare"))
 	%FilterLegendary.pressed.connect(func(): _apply_filter("Legendary"))
 	
+	all_items = JokerDB.get_all_jokers()
 	_apply_filter("All")
-	_show_preview(ITEMS[0])
+	if all_items.size() > 0:
+		_show_preview(all_items[0])
 
 func _apply_filter(filter_name: String) -> void:
 	current_filter = filter_name
@@ -47,38 +39,49 @@ func _apply_filter(filter_name: String) -> void:
 		child.queue_free()
 		
 	var owned_count = 0
-	for item in ITEMS:
-		if item["owned"]:
+	for item in all_items:
+		var rarity_cap = item.get("rarity", "common").capitalize()
+		# In V1 demo, mark first 25 as owned, rest as unowned to demonstrate unlock UI
+		var is_owned = (all_items.find(item) < 25)
+		if is_owned:
 			owned_count += 1
-		if filter_name != "All" and item["rarity"] != filter_name:
+			
+		if filter_name != "All" and rarity_cap.to_lower() != filter_name.to_lower():
 			continue
 			
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(88, 100)
-		if item["owned"]:
-			btn.text = "%s\n%s\n(%s)" % [item["icon"], item["name"].split(" ")[0], item["rarity"][0]]
+		var icon = item.get("icon", "🃏")
+		var short_name = item.get("name", "Joker").split(" ")[0]
+		
+		if is_owned:
+			btn.text = "%s\n%s\n(%s)" % [icon, short_name, rarity_cap[0]]
 		else:
-			btn.text = "🔒\n???\n(%s)" % item["rarity"][0]
+			btn.text = "🔒\n???\n(%s)" % rarity_cap[0]
 			btn.modulate = Color(0.6, 0.6, 0.7, 0.8)
 			
-		var it = item
+		var it = item.duplicate(true)
+		it["owned"] = is_owned
 		btn.pressed.connect(func(): _show_preview(it))
 		grid_container.add_child(btn)
 		
-	progress_label.text = "Jokers: %d/%d" % [owned_count, ITEMS.size()]
+	progress_label.text = "Jokers: %d/%d" % [owned_count, all_items.size()]
 
 func _show_preview(item: Dictionary) -> void:
-	if item["owned"]:
-		preview_icon.text = item["icon"]
-		preview_name.text = item["name"]
-		preview_rarity.text = "Độ Hiếm: " + item["rarity"]
-		preview_desc.text = "Hiệu Ứng: " + item["desc"]
+	var rarity_str = item.get("rarity", "common").capitalize()
+	var is_owned = item.get("owned", true)
+	
+	if is_owned:
+		preview_icon.text = item.get("icon", "🃏")
+		preview_name.text = item.get("name", "")
+		preview_rarity.text = "Độ Hiếm: " + rarity_str
+		preview_desc.text = "Hiệu Ứng: " + item.get("description", "")
 		preview_unlock.text = "Trạng Thái: Đã mở khóa"
 		preview_unlock.modulate = Color("#4dd97a")
 	else:
 		preview_icon.text = "🔒"
 		preview_name.text = "CHƯA MỞ KHÓA"
-		preview_rarity.text = "Độ Hiếm: " + item["rarity"]
+		preview_rarity.text = "Độ Hiếm: " + rarity_str
 		preview_desc.text = "Hiệu Ứng: ???"
-		preview_unlock.text = "Điều Kiện Mở Khóa: " + item["unlock"]
+		preview_unlock.text = "Điều Kiện Mở Khóa: Hoàn thành thử thách Archetype " + item.get("archetype", "").capitalize()
 		preview_unlock.modulate = Color("#ffd700")

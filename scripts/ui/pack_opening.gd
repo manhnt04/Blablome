@@ -1,33 +1,12 @@
 class_name PackOpening
 extends Control
 
+const JokerDB = preload("res://scripts/core/joker_db.gd")
+
 signal card_selected(card_data: Dictionary)
 signal pack_skipped()
 
-const SAMPLE_CARDS = [
-	{
-		"name": "Tiêu Viêm",
-		"icon": "🔥",
-		"rarity": "Uncommon",
-		"stat": "+4 Mult",
-		"desc": "Mỗi lá Hỏa tính điểm: +4 Mult"
-	},
-	{
-		"name": "Ainz",
-		"icon": "🌑",
-		"rarity": "Rare",
-		"stat": "x1.5 Mult",
-		"desc": "Nếu có lá Ám: x1.5 Mult tổng"
-	},
-	{
-		"name": "Gojo Satoru",
-		"icon": "👁️",
-		"rarity": "Legendary",
-		"stat": "+50 Chips",
-		"desc": "Kháng mọi debuff của Boss Blind"
-	}
-]
-
+var pack_cards: Array = []
 var is_revealed: bool = false
 
 @onready var pack_title: Label = %PackTitle
@@ -53,6 +32,7 @@ func _show_face_down() -> void:
 	is_revealed = false
 	flip_button.visible = true
 	skip_button.visible = true
+	pack_cards = JokerDB.get_random_jokers(3)
 	
 	for i in range(3):
 		var box = card_boxes[i]
@@ -63,9 +43,9 @@ func _on_flip_pressed() -> void:
 	is_revealed = true
 	flip_button.visible = false
 	
-	for i in range(3):
+	for i in range(mini(3, pack_cards.size())):
 		var box = card_boxes[i]
-		var c_data = SAMPLE_CARDS[i]
+		var c_data = pack_cards[i]
 		
 		# Animate 3D horizontal scale flip
 		var tw = create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN_OUT)
@@ -75,14 +55,15 @@ func _on_flip_pressed() -> void:
 			b.get_node("%FaceDownLabel" + str(idx + 1)).visible = false
 			var up_content = b.get_node("%FaceUpContent" + str(idx + 1))
 			up_content.visible = true
-			up_content.get_node("%NameLabel" + str(idx + 1)).text = data["name"]
-			up_content.get_node("%IconLabel" + str(idx + 1)).text = data["icon"]
-			up_content.get_node("%StatLabel" + str(idx + 1)).text = data["stat"]
+			up_content.get_node("%NameLabel" + str(idx + 1)).text = data.get("name", "")
+			up_content.get_node("%IconLabel" + str(idx + 1)).text = data.get("icon", "🃏")
+			up_content.get_node("%StatLabel" + str(idx + 1)).text = data.get("rarity", "Common").capitalize()
 		)
 		tw.tween_property(box, "scale:x", 1.0, 0.15)
 
 func _pick_card(index: int) -> void:
-	card_selected.emit(SAMPLE_CARDS[index])
+	if index < pack_cards.size():
+		card_selected.emit(pack_cards[index])
 	get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
 
 func _on_skip_pressed() -> void:
