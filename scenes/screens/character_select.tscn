@@ -1,0 +1,183 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scripts/ui/character_select.gd" id="2_char"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_topbar"]
+content_margin_left = 24.0
+content_margin_top = 10.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0.1, 0.1, 0.14, 1)
+border_width_bottom = 2
+border_color = Color(0.25, 0.25, 0.35, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_preview_box"]
+content_margin_left = 28.0
+content_margin_top = 20.0
+content_margin_right = 28.0
+content_margin_bottom = 20.0
+bg_color = Color(0.11, 0.11, 0.16, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.55, 0.85, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 10
+
+[node name="CharacterSelect" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_char")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.06, 1)
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="TopBar" type="PanelContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_topbar")
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/TopBar"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="BackButton" type="Button" parent="MainVBox/TopBar/HBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "← QUAY LẠI"
+
+[node name="Title" type="Label" parent="MainVBox/TopBar/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 22
+text = "CHỌN NHÂN VẬT KHỞI ĐẦU"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="MainVBox"]
+custom_minimum_size = Vector2(0, 130)
+layout_mode = 2
+vertical_scroll_mode = 0
+
+[node name="Margin" type="MarginContainer" parent="MainVBox/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_right = 32
+
+[node name="CharGridContainer" type="HBoxContainer" parent="MainVBox/ScrollContainer/Margin"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="PreviewSection" type="MarginContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 20
+
+[node name="PreviewBox" type="PanelContainer" parent="MainVBox/PreviewSection"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_preview_box")
+
+[node name="HBox" type="HBoxContainer" parent="MainVBox/PreviewSection/PreviewBox"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="BigAvatarBox" type="VBoxContainer" parent="MainVBox/PreviewSection/PreviewBox/HBox"]
+custom_minimum_size = Vector2(160, 0)
+layout_mode = 2
+alignment = 1
+
+[node name="PreviewIcon" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/BigAvatarBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 72
+text = "👊"
+horizontal_alignment = 1
+
+[node name="DetailsVBox" type="VBoxContainer" parent="MainVBox/PreviewSection/PreviewBox/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="PreviewName" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 24
+text = "Saitama"
+
+[node name="PreviewArchetype" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "Archetype: One Card"
+
+[node name="PreviewAbility" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.9, 0.95, 1)
+theme_override_font_sizes/font_size = 15
+text = "Kỹ Năng: Nếu chỉ đánh 1 lá duy nhất: trigger 5 lần!"
+autowrap_mode = 2
+
+[node name="StatsGrid" type="HBoxContainer" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="PreviewDifficulty" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.6, 0.2, 1)
+text = "Độ Khó: ★★☆☆☆"
+
+[node name="PreviewDeck" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+text = "Bộ bài: 52 lá"
+
+[node name="PreviewMoney" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox/StatsGrid"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+text = "Tiền: $4"
+
+[node name="Spacer" type="Control" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="StartRunButton" type="Button" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "▶ BẮT ĐẦU RUN"

@@ -244,12 +244,6 @@ func _show_defeat() -> void:
 func _on_next_shop_pressed() -> void:
 	if current_score >= target_score:
 		money += 4
-		run_to_shop_requested.emit()
+		get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
 	else:
-		# Restart run
-		current_score = 0
-		hands_left = 4
-		discards_left = 3
-		victory_modal.visible = false
-		_deal_initial_hand()
-		_update_hud()
+		get_tree().change_scene_to_file("res://scenes/screens/game_over.tscn")

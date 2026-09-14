@@ -1,0 +1,173 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scripts/ui/game_over.gd" id="2_over"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_stats_box"]
+content_margin_left = 32.0
+content_margin_top = 24.0
+content_margin_right = 32.0
+content_margin_bottom = 24.0
+bg_color = Color(0.1, 0.1, 0.14, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.3, 0.45, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_unlock_box"]
+content_margin_left = 20.0
+content_margin_top = 12.0
+content_margin_right = 20.0
+content_margin_bottom = 12.0
+bg_color = Color(0.15, 0.12, 0.2, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 0.4, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="GameOverScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_over")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.06, 1)
+
+[node name="Center" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -280.0
+offset_right = 280.0
+offset_bottom = 280.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Center"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
+theme_override_font_sizes/font_size = 36
+text = "💀 GAME OVER"
+horizontal_alignment = 1
+
+[node name="StatsBox" type="PanelContainer" parent="Center"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_stats_box")
+
+[node name="VBox" type="VBoxContainer" parent="Center/StatsBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="StatsLabel" type="Label" parent="Center/StatsBox/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Ante đạt được: 5/8
+Tổng điểm: 12,450
+Tiền còn lại: $43
+Thời gian: 24 phút"
+horizontal_alignment = 1
+
+[node name="FinalBuildBox" type="VBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BuildTitle" type="Label" parent="Center/FinalBuildBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 14
+text = "JOKERS CUỐI RUN"
+horizontal_alignment = 1
+
+[node name="JokersHBox" type="HBoxContainer" parent="Center/FinalBuildBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="Joker1" type="Button" parent="Center/FinalBuildBox/JokersHBox"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "🔥
+Tiêu Viêm"
+
+[node name="Joker2" type="Button" parent="Center/FinalBuildBox/JokersHBox"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "🌑
+Ainz"
+
+[node name="Joker3" type="Button" parent="Center/FinalBuildBox/JokersHBox"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "👊
+Saitama"
+
+[node name="Joker4" type="Button" parent="Center/FinalBuildBox/JokersHBox"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "⚔️
+Levi"
+
+[node name="Joker5" type="Button" parent="Center/FinalBuildBox/JokersHBox"]
+custom_minimum_size = Vector2(80, 60)
+layout_mode = 2
+text = "📈
+Goku"
+
+[node name="UnlockBox" type="PanelContainer" parent="Center"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_unlock_box")
+
+[node name="UnlockLabel" type="Label" parent="Center/UnlockBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.7, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "🎉 MỞ KHÓA MỚI: Nhân vật Sung Jin-Woo | Joker: Ma Đế"
+horizontal_alignment = 1
+
+[node name="Actions" type="HBoxContainer" parent="Center"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="PlayAgainButton" type="Button" parent="Center/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "▶ CHƠI LẠI RUN MỚI"
+
+[node name="MainMenuButton" type="Button" parent="Center/Actions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 48)
+layout_mode = 2
+text = "🏠 VỀ MENU CHÍNH"

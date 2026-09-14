@@ -1,0 +1,267 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scripts/ui/pack_opening.gd" id="2_pack"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_header"]
+content_margin_left = 24.0
+content_margin_top = 16.0
+content_margin_right = 24.0
+content_margin_bottom = 16.0
+bg_color = Color(0.1, 0.1, 0.14, 1)
+border_width_bottom = 2
+border_color = Color(0.25, 0.25, 0.35, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pack_card"]
+content_margin_left = 16.0
+content_margin_top = 20.0
+content_margin_right = 16.0
+content_margin_bottom = 20.0
+bg_color = Color(0.12, 0.12, 0.18, 0.98)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.7, 1, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 10
+
+[node name="PackOpening" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_pack")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.06, 1)
+
+[node name="MainVBox" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 28
+
+[node name="TopBar" type="PanelContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_header")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/TopBar"]
+layout_mode = 2
+alignment = 1
+
+[node name="PackTitle" type="Label" parent="MainVBox/TopBar/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 26
+text = "📦 BUFFOON PACK"
+horizontal_alignment = 1
+
+[node name="SubTitle" type="Label" parent="MainVBox/TopBar/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 15
+text = "Chọn 1 Joker để nhận vào bộ sưu tập"
+horizontal_alignment = 1
+
+[node name="CenterCards" type="HBoxContainer" parent="MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 32
+alignment = 1
+
+[node name="CardBox1" type="PanelContainer" parent="MainVBox/CenterCards"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 320)
+layout_mode = 2
+pivot_offset = Vector2(110, 160)
+theme_override_styles/panel = SubResource("StyleBoxFlat_pack_card")
+
+[node name="FaceDownLabel1" type="Label" parent="MainVBox/CenterCards/CardBox1"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.5, 0.7, 1)
+theme_override_font_sizes/font_size = 48
+text = "🎴
+?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FaceUpContent1" type="VBoxContainer" parent="MainVBox/CenterCards/CardBox1"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="NameLabel1" type="Label" parent="MainVBox/CenterCards/CardBox1/FaceUpContent1"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Tiêu Viêm"
+horizontal_alignment = 1
+
+[node name="IconLabel1" type="Label" parent="MainVBox/CenterCards/CardBox1/FaceUpContent1"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 48
+text = "🔥"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatLabel1" type="Label" parent="MainVBox/CenterCards/CardBox1/FaceUpContent1"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "+4 Mult"
+horizontal_alignment = 1
+
+[node name="PickBtn1" type="Button" parent="MainVBox/CenterCards/CardBox1/FaceUpContent1"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "CHỌN JOKER NÀY"
+
+[node name="CardBox2" type="PanelContainer" parent="MainVBox/CenterCards"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 320)
+layout_mode = 2
+pivot_offset = Vector2(110, 160)
+theme_override_styles/panel = SubResource("StyleBoxFlat_pack_card")
+
+[node name="FaceDownLabel2" type="Label" parent="MainVBox/CenterCards/CardBox2"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.5, 0.7, 1)
+theme_override_font_sizes/font_size = 48
+text = "🎴
+?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FaceUpContent2" type="VBoxContainer" parent="MainVBox/CenterCards/CardBox2"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="NameLabel2" type="Label" parent="MainVBox/CenterCards/CardBox2/FaceUpContent2"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Ainz"
+horizontal_alignment = 1
+
+[node name="IconLabel2" type="Label" parent="MainVBox/CenterCards/CardBox2/FaceUpContent2"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 48
+text = "🌑"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatLabel2" type="Label" parent="MainVBox/CenterCards/CardBox2/FaceUpContent2"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "x1.5 Mult"
+horizontal_alignment = 1
+
+[node name="PickBtn2" type="Button" parent="MainVBox/CenterCards/CardBox2/FaceUpContent2"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "CHỌN JOKER NÀY"
+
+[node name="CardBox3" type="PanelContainer" parent="MainVBox/CenterCards"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 320)
+layout_mode = 2
+pivot_offset = Vector2(110, 160)
+theme_override_styles/panel = SubResource("StyleBoxFlat_pack_card")
+
+[node name="FaceDownLabel3" type="Label" parent="MainVBox/CenterCards/CardBox3"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.5, 0.7, 1)
+theme_override_font_sizes/font_size = 48
+text = "🎴
+?"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="FaceUpContent3" type="VBoxContainer" parent="MainVBox/CenterCards/CardBox3"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="NameLabel3" type="Label" parent="MainVBox/CenterCards/CardBox3/FaceUpContent3"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Gojo Satoru"
+horizontal_alignment = 1
+
+[node name="IconLabel3" type="Label" parent="MainVBox/CenterCards/CardBox3/FaceUpContent3"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 48
+text = "👁️"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="StatLabel3" type="Label" parent="MainVBox/CenterCards/CardBox3/FaceUpContent3"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.2, 1)
+theme_override_font_sizes/font_size = 14
+text = "+50 Chips"
+horizontal_alignment = 1
+
+[node name="PickBtn3" type="Button" parent="MainVBox/CenterCards/CardBox3/FaceUpContent3"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+text = "CHỌN JOKER NÀY"
+
+[node name="BottomActions" type="HBoxContainer" parent="MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="FlipButton" type="Button" parent="MainVBox/BottomActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(220, 48)
+layout_mode = 2
+text = "🎴 LẬT BÀI"
+
+[node name="SkipButton" type="Button" parent="MainVBox/BottomActions"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+text = "⏭ BỎ QUA GÓI"

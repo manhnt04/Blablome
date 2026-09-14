@@ -16,6 +16,18 @@ func _ready() -> void:
 	next_blind_btn.pressed.connect(func():
 		get_tree().change_scene_to_file("res://scenes/screens/blind_select.tscn")
 	)
+	if has_node("%BuyPackBtn1"):
+		get_node("%BuyPackBtn1").pressed.connect(func():
+			if money >= 4:
+				money -= 4
+				get_tree().change_scene_to_file("res://scenes/screens/pack_opening.tscn")
+		)
+	if has_node("%BuyPackBtn2"):
+		get_node("%BuyPackBtn2").pressed.connect(func():
+			if money >= 4:
+				money -= 4
+				get_tree().change_scene_to_file("res://scenes/screens/pack_opening.tscn")
+		)
 
 func _update_hud() -> void:
 	money_label.text = "🪙 $%d" % money
