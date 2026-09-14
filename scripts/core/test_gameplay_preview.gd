@@ -1,0 +1,48 @@
+extends SceneTree
+
+func _init() -> void:
+	print("--- TESTING GAMEPLAY BOARD WITH MOONLIT UI FEATURES ---")
+	var board_scene = load("res://scenes/screens/gameplay_board.tscn")
+	assert(board_scene != null, "gameplay_board.tscn must load")
+	
+	var board = board_scene.instantiate()
+	assert(board != null, "board must instantiate")
+	root.add_child(board)
+	
+	# Verify UI nodes exist
+	assert(board.top_interest_label != null, "top_interest_label must exist")
+	assert(board.boss_banner != null, "boss_banner must exist")
+	assert(board.scoring_trace_label != null, "scoring_trace_label must exist")
+	assert(board.deck_counter_label != null, "deck_counter_label must exist")
+	assert(board.scoring_hud != null, "scoring_hud must exist")
+	
+	print("[PASS] UI Nodes verified successfully.")
+	
+	# Verify hand cards were dealt
+	assert(board.hand_cards.size() == 8, "Initial hand size must be 8")
+	print("[PASS] Hand cards dealt: %d cards" % board.hand_cards.size())
+	
+	# Test card selection
+	var card1 = board.hand_cards[0]
+	var card2 = board.hand_cards[1]
+	card1.set_selected(true)
+	card2.set_selected(true)
+	assert(board.selected_cards.size() == 2, "2 cards must be selected")
+	print("[PASS] 2 cards selected. ScoringHUD preview updated: %s" % board.scoring_trace_label.text)
+	
+	# Test live preview values
+	assert(board.scoring_hud.current_score > 0, "Current score must be > 0 when cards selected")
+	assert(board.scoring_hud.preview_badge.visible == true, "Preview badge must be visible when cards selected")
+	print("[PASS] Live Preview calculation verified. Projected: %d" % board.scoring_hud.current_score)
+	
+	# Test unselection
+	card1.set_selected(false)
+	card2.set_selected(false)
+	assert(board.selected_cards.is_empty(), "Cards should be unselected")
+	assert(board.scoring_hud.preview_badge.visible == false, "Preview badge should be hidden when empty")
+	print("[PASS] Unselection verified.")
+	
+	# Clean up
+	board.queue_free()
+	print("ALL GAMEPLAY BOARD MOONLIT TESTS PASSED 100%!")
+	quit(0)
