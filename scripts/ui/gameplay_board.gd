@@ -66,17 +66,67 @@ var shake_trauma: float = 0.0
 
 var run: RunStateMachine = null
 
+func _ensure_nodes() -> void:
+	if top_ante_label == null: top_ante_label = %AnteLabel if has_node("%AnteLabel") else null
+	if top_blind_label == null: top_blind_label = %BlindLabel if has_node("%BlindLabel") else null
+	if top_score_label == null: top_score_label = %TopScoreLabel if has_node("%TopScoreLabel") else null
+	if top_score_bar == null: top_score_bar = %ScoreProgressBar if has_node("%ScoreProgressBar") else null
+	if top_money_label == null: top_money_label = %MoneyLabel if has_node("%MoneyLabel") else null
+	if top_interest_label == null: top_interest_label = %InterestLabel if has_node("%InterestLabel") else null
+	if boss_banner == null: boss_banner = %BossBanner if has_node("%BossBanner") else null
+	if boss_warning_label == null: boss_warning_label = %BossWarningLabel if has_node("%BossWarningLabel") else null
+	if joker_container == null: joker_container = %JokerContainer if has_node("%JokerContainer") else null
+	if consumable_container == null: consumable_container = %ConsumableContainer if has_node("%ConsumableContainer") else null
+	if scoring_hud == null: scoring_hud = %ScoringHUD if has_node("%ScoringHUD") else null
+	if scoring_trace_label == null: scoring_trace_label = %ScoringTraceLabel if has_node("%ScoringTraceLabel") else null
+	if played_container == null: played_container = %PlayedContainer if has_node("%PlayedContainer") else null
+	if hand_container == null: hand_container = %HandContainer if has_node("%HandContainer") else null
+	if deck_counter_label == null: deck_counter_label = %DeckCounterLabel if has_node("%DeckCounterLabel") else null
+	if hands_counter_label == null: hands_counter_label = %HandsCounterLabel if has_node("%HandsCounterLabel") else null
+	if discards_counter_label == null: discards_counter_label = %DiscardsCounterLabel if has_node("%DiscardsCounterLabel") else null
+	if play_button == null: play_button = %PlayButton if has_node("%PlayButton") else null
+	if discard_button == null: discard_button = %DiscardButton if has_node("%DiscardButton") else null
+	if sort_suit_btn == null: sort_suit_btn = %SortSuitButton if has_node("%SortSuitButton") else null
+	if sort_rank_btn == null: sort_rank_btn = %SortRankButton if has_node("%SortRankButton") else null
+	if victory_modal == null: victory_modal = %VictoryModal if has_node("%VictoryModal") else null
+	if victory_title == null: victory_title = %VictoryTitle if has_node("%VictoryTitle") else null
+	if next_shop_btn == null: next_shop_btn = %NextShopButton if has_node("%NextShopButton") else null
+
+func _get_game_manager():
+	if not is_inside_tree():
+		return null
+	var tree = get_tree()
+	if tree != null and tree.root != null and tree.root.has_node("GameManager"):
+		return tree.root.get_node("GameManager")
+	return null
+
+func _get_sound_manager():
+	if not is_inside_tree():
+		return null
+	var tree = get_tree()
+	if tree != null and tree.root != null and tree.root.has_node("SoundManager"):
+		return tree.root.get_node("SoundManager")
+	return null
+
 func _ready() -> void:
-	play_button.pressed.connect(_on_play_hand_pressed)
-	discard_button.pressed.connect(_on_discard_pressed)
-	sort_suit_btn.pressed.connect(_on_sort_suit_pressed)
-	sort_rank_btn.pressed.connect(_on_sort_rank_pressed)
-	next_shop_btn.pressed.connect(_on_next_shop_pressed)
-	%PauseButton.pressed.connect(func(): pause_requested.emit())
+	_ensure_nodes()
+	if play_button != null and not play_button.pressed.is_connected(_on_play_hand_pressed):
+		play_button.pressed.connect(_on_play_hand_pressed)
+	if discard_button != null and not discard_button.pressed.is_connected(_on_discard_pressed):
+		discard_button.pressed.connect(_on_discard_pressed)
+	if sort_suit_btn != null and not sort_suit_btn.pressed.is_connected(_on_sort_suit_pressed):
+		sort_suit_btn.pressed.connect(_on_sort_suit_pressed)
+	if sort_rank_btn != null and not sort_rank_btn.pressed.is_connected(_on_sort_rank_pressed):
+		sort_rank_btn.pressed.connect(_on_sort_rank_pressed)
+	if next_shop_btn != null and not next_shop_btn.pressed.is_connected(_on_next_shop_pressed):
+		next_shop_btn.pressed.connect(_on_next_shop_pressed)
+	var pause_btn = %PauseButton if has_node("%PauseButton") else null
+	if pause_btn != null:
+		pause_btn.pressed.connect(func(): pause_requested.emit())
 	
 	victory_modal.visible = false
 	
-	var gm = get_node_or_null("/root/GameManager")
+	var gm = _get_game_manager()
 	if gm != null and gm.current_run != null:
 		run = gm.current_run
 	else:
@@ -368,14 +418,24 @@ func _calculate_joker_contributions(scoring_cards: Array, hand_name: String = ""
 	return JokerRuntime.calculate_hand_bonuses(jokers_pool, scoring_cards, hand_name, ctx)
 
 
+func _unhandled_input(event: InputEvent) -> void:
+	if event.is_action_pressed("ui_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE):
+		if selected_cards.size() == 5 and hands_left > 0:
+			_on_play_hand_pressed()
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_D:
+		if not selected_cards.is_empty() and discards_left > 0:
+			_on_discard_pressed()
+
 func _evaluate_selected_cards() -> void:
-	if selected_cards.is_empty():
-		scoring_hud.update_display("Chưa chọn lá", 1, 0, 0, 1.0, false)
-		scoring_trace_label.text = "Chọn từ 1 đến 5 lá để xem trước điểm (Space: Đánh, D: Bỏ lá)"
-		scoring_trace_label.modulate = Color(0.65, 0.75, 0.85)
+	var count: int = selected_cards.size()
+	if count < 5:
+		var name_text = "Chưa đủ 5 lá (%d/5)" % count if count > 0 else "Chưa chọn lá (0/5)"
+		scoring_hud.update_display(name_text, 1, 0, 0, 1.0, false)
+		scoring_trace_label.text = "⚠️ Bắt buộc chọn đủ 5 lá bài (%d/5)" % count
+		scoring_trace_label.modulate = Color(0.9, 0.75, 0.4)
 		play_button.disabled = true
-		play_button.text = "CHỌN BÀI"
-		discard_button.disabled = true
+		play_button.text = "CHỌN ĐỦ 5 LÁ (%d/5)" % count
+		discard_button.disabled = (count == 0 or discards_left <= 0)
 		discard_button.text = "BỎ LÁ (D) [%d]" % discards_left
 		return
 		
@@ -391,7 +451,7 @@ func _evaluate_selected_cards() -> void:
 	
 	var xmult_str: String = (" × x%.1f" % total_xmult) if total_xmult > 1.0 else ""
 	var trigger_str: String = " | " + " · ".join(j_bonus["triggers"]) if not j_bonus["triggers"].is_empty() else ""
-	scoring_trace_label.text = "🔮 Dự tính: [ %d Chips ] × [ %.1f Mult ]%s = ≈ %d điểm%s" % [total_chips, total_mult, xmult_str, projected_score, trigger_str]
+	scoring_trace_label.text = "🔮 [ %d ] × [ %.1f ]%s = ≈ %d điểm%s" % [total_chips, total_mult, xmult_str, projected_score, trigger_str]
 	scoring_trace_label.modulate = Color(0.38, 0.74, 0.97)
 	
 	play_button.disabled = (hands_left <= 0)
@@ -400,7 +460,12 @@ func _evaluate_selected_cards() -> void:
 	discard_button.text = "BỎ LÁ (D) [%d]" % discards_left
 
 func _on_play_hand_pressed() -> void:
-	if selected_cards.is_empty() or hands_left <= 0:
+	if selected_cards.size() != 5:
+		scoring_trace_label.text = "⛔ BẮT BUỘC PHẢI CHỌN ĐỦ 5 LÁ BÀI!"
+		scoring_trace_label.modulate = Color(1.0, 0.3, 0.3)
+		trigger_screen_shake(0.35)
+		return
+	if hands_left <= 0:
 		return
 		
 	var eval: Dictionary = HandEvaluator.evaluate(selected_cards)
@@ -583,7 +648,7 @@ func _check_round_end() -> void:
 func _show_victory() -> void:
 	victory_title.text = "🎉 CHIẾN THẮNG BLIND!"
 	victory_title.modulate = Color("#4dd97a")
-	var sm = get_node_or_null("/root/SoundManager")
+	var sm = _get_sound_manager()
 	if sm != null:
 		sm.play_victory()
 		sm.play_cash_register()
@@ -602,7 +667,7 @@ func _show_victory() -> void:
 func _show_defeat() -> void:
 	victory_title.text = "💀 THẤT BẠI — HẾT LƯỢT ĐÁNH!"
 	victory_title.modulate = Color("#ff4d4d")
-	var sm = get_node_or_null("/root/SoundManager")
+	var sm = _get_sound_manager()
 	if sm != null:
 		sm.play_defeat()
 	if run != null:
@@ -612,7 +677,7 @@ func _show_defeat() -> void:
 
 
 func _on_next_shop_pressed() -> void:
-	var gm = get_node_or_null("/root/GameManager")
+	var gm = _get_game_manager()
 	if current_score >= target_score:
 		if run != null:
 			run.cash_out()

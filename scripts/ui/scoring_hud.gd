@@ -17,10 +17,24 @@ var current_mult: float = 0.0
 var current_xmult: float = 1.0
 var current_score: int = 0
 
+func _ensure_nodes() -> void:
+	if preview_badge == null: preview_badge = %PreviewBadge if has_node("%PreviewBadge") else null
+	if hand_name_label == null: hand_name_label = %HandNameLabel if has_node("%HandNameLabel") else null
+	if hand_level_label == null: hand_level_label = %HandLevelLabel if has_node("%HandLevelLabel") else null
+	if chips_label == null: chips_label = %ChipsLabel if has_node("%ChipsLabel") else null
+	if mult_label == null: mult_label = %MultLabel if has_node("%MultLabel") else null
+	if xmult_multiply_label == null: xmult_multiply_label = %XMultMultiplyLabel if has_node("%XMultMultiplyLabel") else null
+	if xmult_box == null: xmult_box = %XMultBox if has_node("%XMultBox") else null
+	if xmult_label == null: xmult_label = %XMultLabel if has_node("%XMultLabel") else null
+	if score_label == null: score_label = %ScoreLabel if has_node("%ScoreLabel") else null
+	if score_box == null: score_box = %ScoreBox if has_node("%ScoreBox") else null
+
 func _ready() -> void:
+	_ensure_nodes()
 	update_display("Chưa chọn lá", 1, 0, 0, 1.0, false)
 
 func update_display(hand_name: String, level: int, chips: int, mult: float, xmult: float = 1.0, is_preview: bool = false) -> void:
+	_ensure_nodes()
 	current_chips = chips
 	current_mult = mult
 	current_xmult = xmult
@@ -32,30 +46,36 @@ func update_display(hand_name: String, level: int, chips: int, mult: float, xmul
 			preview_badge.text = "🔮 [DỰ TÍNH]"
 			preview_badge.modulate = Color(0.38, 0.74, 0.97)
 			
-	hand_name_label.text = hand_name
-	hand_level_label.text = "Cấp " + str(level)
-	chips_label.text = str(current_chips)
+	if hand_name_label != null:
+		hand_name_label.text = hand_name
+	if hand_level_label != null:
+		hand_level_label.text = "Cấp " + str(level)
+	if chips_label != null:
+		chips_label.text = str(current_chips)
 	
 	# Mult formatting
-	if is_equal_approx(current_mult, round(current_mult)):
-		mult_label.text = str(int(current_mult))
-	else:
-		mult_label.text = "%.1f" % current_mult
+	if mult_label != null:
+		if is_equal_approx(current_mult, round(current_mult)):
+			mult_label.text = str(int(current_mult))
+		else:
+			mult_label.text = "%.1f" % current_mult
 		
 	# XMult formatting
 	if xmult_box != null and xmult_multiply_label != null:
 		if current_xmult > 1.0:
 			xmult_box.visible = true
 			xmult_multiply_label.visible = true
-			if is_equal_approx(current_xmult, round(current_xmult)):
-				xmult_label.text = "x" + str(int(current_xmult))
-			else:
-				xmult_label.text = "x%.1f" % current_xmult
+			if xmult_label != null:
+				if is_equal_approx(current_xmult, round(current_xmult)):
+					xmult_label.text = "x" + str(int(current_xmult))
+				else:
+					xmult_label.text = "x%.1f" % current_xmult
 		else:
 			xmult_box.visible = false
 			xmult_multiply_label.visible = false
 			
-	score_label.text = str(current_score)
+	if score_label != null:
+		score_label.text = str(current_score)
 
 func pop_score_animation() -> void:
 	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)

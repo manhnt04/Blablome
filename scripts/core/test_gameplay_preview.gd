@@ -8,6 +8,7 @@ func _init() -> void:
 	var board = board_scene.instantiate()
 	assert(board != null, "board must instantiate")
 	root.add_child(board)
+	board._ready()
 	
 	# Verify UI nodes exist
 	assert(board.top_interest_label != null, "top_interest_label must exist")
@@ -22,22 +23,28 @@ func _init() -> void:
 	assert(board.hand_cards.size() == 8, "Initial hand size must be 8")
 	print("[PASS] Hand cards dealt: %d cards" % board.hand_cards.size())
 	
-	# Test card selection
+	# Test card selection: 2 cards (not yet 5)
 	var card1 = board.hand_cards[0]
 	var card2 = board.hand_cards[1]
 	card1.set_selected(true)
 	card2.set_selected(true)
 	assert(board.selected_cards.size() == 2, "2 cards must be selected")
-	print("[PASS] 2 cards selected. ScoringHUD preview updated: %s" % board.scoring_trace_label.text)
+	assert(board.play_button.disabled == true, "Play button must remain disabled when < 5 cards")
+	print("[PASS] 2 cards selected -> Play disabled as expected (requires 5 cards).")
 	
-	# Test live preview values
-	assert(board.scoring_hud.current_score > 0, "Current score must be > 0 when cards selected")
-	assert(board.scoring_hud.preview_badge.visible == true, "Preview badge must be visible when cards selected")
-	print("[PASS] Live Preview calculation verified. Projected: %d" % board.scoring_hud.current_score)
+	# Select 3 more cards to reach 5
+	board.hand_cards[2].set_selected(true)
+	board.hand_cards[3].set_selected(true)
+	board.hand_cards[4].set_selected(true)
+	assert(board.selected_cards.size() == 5, "5 cards must be selected")
+	assert(board.play_button.disabled == false, "Play button must be enabled when exactly 5 cards selected")
+	assert(board.scoring_hud.current_score > 0, "Current score must be > 0 when 5 cards selected")
+	assert(board.scoring_hud.preview_badge.visible == true, "Preview badge must be visible")
+	print("[PASS] Exactly 5 cards selected -> Live Preview calculated: %d pts, Play enabled!" % board.scoring_hud.current_score)
 	
 	# Test unselection
-	card1.set_selected(false)
-	card2.set_selected(false)
+	for i in range(5):
+		board.hand_cards[i].set_selected(false)
 	assert(board.selected_cards.is_empty(), "Cards should be unselected")
 	assert(board.scoring_hud.preview_badge.visible == false, "Preview badge should be hidden when empty")
 	print("[PASS] Unselection verified.")

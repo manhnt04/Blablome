@@ -12,7 +12,7 @@ content_margin_top = 14.0
 content_margin_right = 14.0
 content_margin_bottom = 14.0
 bg_color = Color(0.045, 0.052, 0.08, 0.98)
-border_width_right = 3
+border_width_left = 3
 border_color = Color(0.16, 0.20, 0.32, 1)
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ante_box"]
@@ -153,186 +153,6 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 0
 
-[node name="LeftSidebar" type="PanelContainer" parent="MainLayout"]
-custom_minimum_size = Vector2(270, 0)
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_sidebar")
-
-[node name="SidebarVBox" type="VBoxContainer" parent="MainLayout/LeftSidebar"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="TopHeader" type="HBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox"]
-layout_mode = 2
-
-[node name="GameTitle" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/TopHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
-theme_override_font_sizes/font_size = 18
-text = "BLABLOME"
-
-[node name="PauseButton" type="Button" parent="MainLayout/LeftSidebar/SidebarVBox/TopHeader"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(36, 32)
-layout_mode = 2
-text = "⏸"
-
-[node name="AnteBox" type="PanelContainer" parent="MainLayout/LeftSidebar/SidebarVBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_ante_box")
-
-[node name="AnteVBox" type="VBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox/AnteBox"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="AnteLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/AnteBox/AnteVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.95, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 16
-text = "ANTE 1/8"
-
-[node name="BlindLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/AnteBox/AnteVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.92, 1, 1)
-theme_override_font_sizes/font_size = 20
-text = "Small Blind"
-
-[node name="BossBanner" type="PanelContainer" parent="MainLayout/LeftSidebar/SidebarVBox"]
-unique_name_in_owner = true
-visible = false
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_boss_banner")
-
-[node name="BossWarningLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/BossBanner"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.45, 0.55, 1)
-theme_override_font_sizes/font_size = 12
-text = "⚠️ QUY TẮC BOSS: Vô hiệu lá bài!"
-autowrap_mode = 2
-
-[node name="ScoreBox" type="PanelContainer" parent="MainLayout/LeftSidebar/SidebarVBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_score_box")
-
-[node name="ScoreVBox" type="VBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox/ScoreBox"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="ScoreHeader" type="HBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox/ScoreBox/ScoreVBox"]
-layout_mode = 2
-
-[node name="ScoreTitle" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/ScoreBox/ScoreVBox/ScoreHeader"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.65, 0.75, 0.9, 1)
-theme_override_font_sizes/font_size = 12
-text = "MỤC TIÊU ROUND"
-
-[node name="TopScoreLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/ScoreBox/ScoreVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.85, 1, 1)
-theme_override_font_sizes/font_size = 24
-text = "0 / 300"
-horizontal_alignment = 1
-
-[node name="ScoreProgressBar" type="ProgressBar" parent="MainLayout/LeftSidebar/SidebarVBox/ScoreBox/ScoreVBox"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 16)
-layout_mode = 2
-max_value = 300.0
-show_percentage = false
-
-[node name="ActionCountersHBox" type="HBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="HandsPocket" type="PanelContainer" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_hand_pocket")
-
-[node name="HandsVBox" type="VBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox/HandsPocket"]
-layout_mode = 2
-alignment = 1
-
-[node name="HandsTitle" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox/HandsPocket/HandsVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.8, 0.9, 1, 0.9)
-theme_override_font_sizes/font_size = 11
-text = "HANDS"
-horizontal_alignment = 1
-
-[node name="HandsCounterLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox/HandsPocket/HandsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 26
-text = "4"
-horizontal_alignment = 1
-
-[node name="DiscardsPocket" type="PanelContainer" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_discard_pocket")
-
-[node name="DiscardsVBox" type="VBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox/DiscardsPocket"]
-layout_mode = 2
-alignment = 1
-
-[node name="DiscardsTitle" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox/DiscardsPocket/DiscardsVBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.85, 0.9)
-theme_override_font_sizes/font_size = 11
-text = "DISCARDS"
-horizontal_alignment = 1
-
-[node name="DiscardsCounterLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/ActionCountersHBox/DiscardsPocket/DiscardsVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 26
-text = "3"
-horizontal_alignment = 1
-
-[node name="MoneyPocket" type="PanelContainer" parent="MainLayout/LeftSidebar/SidebarVBox"]
-layout_mode = 2
-theme_override_styles/panel = SubResource("StyleBoxFlat_money_pocket")
-
-[node name="MoneyHBox" type="HBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox/MoneyPocket"]
-layout_mode = 2
-
-[node name="MoneyLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/MoneyPocket/MoneyHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.98, 0.85, 0.25, 1)
-theme_override_font_sizes/font_size = 22
-text = "🪙 $4"
-
-[node name="InterestLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox/MoneyPocket/MoneyHBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.8, 0.7, 1)
-theme_override_font_sizes/font_size = 12
-text = "Lãi: +$0"
-
-[node name="SidebarSpacer" type="Control" parent="MainLayout/LeftSidebar/SidebarVBox"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="DeckCounterLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.65, 0.8, 1)
-theme_override_font_sizes/font_size = 13
-text = "🃏 Nọc: 52/52 lá"
-horizontal_alignment = 1
-
 [node name="CenterArea" type="VBoxContainer" parent="MainLayout"]
 layout_mode = 2
 size_flags_horizontal = 3
@@ -387,21 +207,8 @@ size_flags_vertical = 3
 alignment = 1
 theme_override_constants/separation = 8
 
-[node name="ScoringHUD" parent="MainLayout/CenterArea/StageMiddle" instance=ExtResource("3_score")]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="ScoringTraceLabel" type="Label" parent="MainLayout/CenterArea/StageMiddle"]
-unique_name_in_owner = true
-layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.75, 0.95, 1)
-theme_override_font_sizes/font_size = 14
-text = "Chọn hoặc Kéo bài để xem trước điểm (Space: Đánh, D: Bỏ lá)"
-horizontal_alignment = 1
-
 [node name="PlayedArea" type="Control" parent="MainLayout/CenterArea/StageMiddle"]
-custom_minimum_size = Vector2(0, 110)
+custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 
 [node name="PlayedContainer" type="HBoxContainer" parent="MainLayout/CenterArea/StageMiddle/PlayedArea"]
@@ -440,45 +247,236 @@ theme_override_constants/margin_bottom = 12
 [node name="ActionHBox" type="HBoxContainer" parent="MainLayout/CenterArea/BottomActionBar"]
 layout_mode = 2
 theme_override_constants/separation = 16
+alignment = 1
 
 [node name="SortGroup" type="HBoxContainer" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
 [node name="SortSuitButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/SortGroup"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 42)
+custom_minimum_size = Vector2(130, 42)
 layout_mode = 2
 text = "SẮP XẾP: HỆ"
 
 [node name="SortRankButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/SortGroup"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 42)
+custom_minimum_size = Vector2(130, 42)
 layout_mode = 2
 text = "SẮP XẾP: SỐ"
 
-[node name="BottomSpacer" type="Control" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox"]
+[node name="RightSidebar" type="PanelContainer" parent="MainLayout"]
+custom_minimum_size = Vector2(290, 0)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_sidebar")
+
+[node name="SidebarVBox" type="VBoxContainer" parent="MainLayout/RightSidebar"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="TopHeader" type="HBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox"]
+layout_mode = 2
+
+[node name="GameTitle" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/TopHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.9, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "BLABLOME"
+
+[node name="PauseButton" type="Button" parent="MainLayout/RightSidebar/SidebarVBox/TopHeader"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 32)
+layout_mode = 2
+text = "⏸"
+
+[node name="AnteBox" type="PanelContainer" parent="MainLayout/RightSidebar/SidebarVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_ante_box")
+
+[node name="AnteVBox" type="VBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox/AnteBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="AnteLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/AnteBox/AnteVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 16
+text = "ANTE 1/8"
+
+[node name="BlindLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/AnteBox/AnteVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "Small Blind"
+
+[node name="BossBanner" type="PanelContainer" parent="MainLayout/RightSidebar/SidebarVBox"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_boss_banner")
+
+[node name="BossWarningLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/BossBanner"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.45, 0.55, 1)
+theme_override_font_sizes/font_size = 12
+text = "⚠️ QUY TẮC BOSS: Vô hiệu lá bài!"
+autowrap_mode = 2
+
+[node name="ScoreBox" type="PanelContainer" parent="MainLayout/RightSidebar/SidebarVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_score_box")
+
+[node name="ScoreVBox" type="VBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox/ScoreBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ScoreHeader" type="HBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox/ScoreBox/ScoreVBox"]
+layout_mode = 2
+
+[node name="ScoreTitle" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/ScoreBox/ScoreVBox/ScoreHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.65, 0.75, 0.9, 1)
+theme_override_font_sizes/font_size = 12
+text = "MỤC TIÊU ROUND"
+
+[node name="TopScoreLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/ScoreBox/ScoreVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.35, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "0 / 300"
+horizontal_alignment = 1
+
+[node name="ScoreProgressBar" type="ProgressBar" parent="MainLayout/RightSidebar/SidebarVBox/ScoreBox/ScoreVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 16)
+layout_mode = 2
+max_value = 300.0
+show_percentage = false
+
+[node name="ScoringHUD" parent="MainLayout/RightSidebar/SidebarVBox" instance=ExtResource("3_score")]
+unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="ButtonsGroup" type="HBoxContainer" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="PlayButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/ButtonsGroup"]
+[node name="ScoringTraceLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(185, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "CHỌN BÀI"
+theme_override_colors/font_color = Color(0.55, 0.75, 0.95, 1)
+theme_override_font_sizes/font_size = 12
+text = "Chọn đủ 5 lá bài để đánh"
+horizontal_alignment = 1
+autowrap_mode = 2
 
-[node name="DiscardButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/ButtonsGroup"]
+[node name="ActionCountersHBox" type="HBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="HandsPocket" type="PanelContainer" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_hand_pocket")
+
+[node name="HandsVBox" type="VBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox/HandsPocket"]
+layout_mode = 2
+alignment = 1
+
+[node name="HandsTitle" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox/HandsPocket/HandsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.9, 1, 0.9)
+theme_override_font_sizes/font_size = 11
+text = "HANDS"
+horizontal_alignment = 1
+
+[node name="HandsCounterLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox/HandsPocket/HandsVBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(165, 48)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 26
+text = "4"
+horizontal_alignment = 1
+
+[node name="DiscardsPocket" type="PanelContainer" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_styles/panel = SubResource("StyleBoxFlat_discard_pocket")
+
+[node name="DiscardsVBox" type="VBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox/DiscardsPocket"]
+layout_mode = 2
+alignment = 1
+
+[node name="DiscardsTitle" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox/DiscardsPocket/DiscardsVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.85, 0.9)
+theme_override_font_sizes/font_size = 11
+text = "DISCARDS"
+horizontal_alignment = 1
+
+[node name="DiscardsCounterLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/ActionCountersHBox/DiscardsPocket/DiscardsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 26
+text = "3"
+horizontal_alignment = 1
+
+[node name="MoneyPocket" type="PanelContainer" parent="MainLayout/RightSidebar/SidebarVBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_money_pocket")
+
+[node name="MoneyHBox" type="HBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox/MoneyPocket"]
+layout_mode = 2
+
+[node name="MoneyLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/MoneyPocket/MoneyHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.98, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 22
+text = "🪙 $4"
+
+[node name="InterestLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox/MoneyPocket/MoneyHBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.8, 0.7, 1)
+theme_override_font_sizes/font_size = 12
+text = "Lãi: +$0"
+
+[node name="SidebarSpacer" type="Control" parent="MainLayout/RightSidebar/SidebarVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ButtonsGroup" type="VBoxContainer" parent="MainLayout/RightSidebar/SidebarVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PlayButton" type="Button" parent="MainLayout/RightSidebar/SidebarVBox/ButtonsGroup"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+theme_override_font_sizes/font_size = 17
+text = "CHỌN ĐỦ 5 LÁ (0/5)"
+
+[node name="DiscardButton" type="Button" parent="MainLayout/RightSidebar/SidebarVBox/ButtonsGroup"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.75, 0.75, 1)
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 16
 text = "BỎ LÁ (D) [3]"
+
+[node name="DeckCounterLabel" type="Label" parent="MainLayout/RightSidebar/SidebarVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.65, 0.8, 1)
+theme_override_font_sizes/font_size = 13
+text = "🃏 Nọc: 52/52 lá"
+horizontal_alignment = 1
 
 [node name="VictoryModal" type="PanelContainer" parent="."]
 unique_name_in_owner = true

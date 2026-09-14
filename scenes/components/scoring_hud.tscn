@@ -3,28 +3,28 @@
 [ext_resource type="Script" path="res://scripts/ui/scoring_hud.gd" id="1_score"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_bg"]
-content_margin_left = 20.0
-content_margin_top = 10.0
-content_margin_right = 20.0
-content_margin_bottom = 10.0
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
 bg_color = Color(0.0588235, 0.0705882, 0.117647, 0.96)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
 border_color = Color(0.180392, 0.227451, 0.345098, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-shadow_color = Color(0, 0, 0, 0.6)
-shadow_size = 10
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 6
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_chips"]
-content_margin_left = 16.0
-content_margin_top = 6.0
-content_margin_right = 16.0
-content_margin_bottom = 6.0
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
 bg_color = Color(0.02, 0.25, 0.45, 1)
 border_width_left = 2
 border_width_top = 2
@@ -36,13 +36,13 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 shadow_color = Color(0.14, 0.65, 0.95, 0.3)
-shadow_size = 6
+shadow_size = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_mult"]
-content_margin_left = 16.0
-content_margin_top = 6.0
-content_margin_right = 16.0
-content_margin_bottom = 6.0
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 10.0
+content_margin_bottom = 4.0
 bg_color = Color(0.65, 0.12, 0.2, 1)
 border_width_left = 2
 border_width_top = 2
@@ -54,13 +54,13 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 shadow_color = Color(0.98, 0.35, 0.45, 0.3)
-shadow_size = 6
+shadow_size = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_xmult"]
-content_margin_left = 12.0
-content_margin_top = 6.0
-content_margin_right = 12.0
-content_margin_bottom = 6.0
+content_margin_left = 8.0
+content_margin_top = 4.0
+content_margin_right = 8.0
+content_margin_bottom = 4.0
 bg_color = Color(0.6, 0.4, 0.05, 1)
 border_width_left = 2
 border_width_top = 2
@@ -72,13 +72,13 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 shadow_color = Color(1, 0.85, 0.3, 0.3)
-shadow_size = 6
+shadow_size = 4
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_score"]
-content_margin_left = 20.0
-content_margin_top = 6.0
-content_margin_right = 20.0
-content_margin_bottom = 6.0
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
 bg_color = Color(0.12, 0.11, 0.05, 1)
 border_width_left = 2
 border_width_top = 2
@@ -90,12 +90,12 @@ corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
 shadow_color = Color(1, 0.84, 0.2, 0.35)
-shadow_size = 8
+shadow_size = 6
 
 [node name="ScoringHUD" type="PanelContainer"]
-custom_minimum_size = Vector2(500, 110)
-offset_right = 500.0
-offset_bottom = 110.0
+custom_minimum_size = Vector2(250, 85)
+offset_right = 250.0
+offset_bottom = 85.0
 theme_override_styles/panel = SubResource("StyleBoxFlat_hud_bg")
 script = ExtResource("1_score")
 
@@ -136,10 +136,10 @@ text = "Cấp 1"
 [node name="MathRow" type="HBoxContainer" parent="VBox"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="ChipsBox" type="PanelContainer" parent="VBox/MathRow"]
-custom_minimum_size = Vector2(90, 0)
+custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_chips")
 
@@ -147,18 +147,18 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_chips")
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 18
 text = "245"
 horizontal_alignment = 1
 
 [node name="MultiplyLabel" type="Label" parent="VBox/MathRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 18
 text = "×"
 
 [node name="MultBox" type="PanelContainer" parent="VBox/MathRow"]
-custom_minimum_size = Vector2(75, 0)
+custom_minimum_size = Vector2(55, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_mult")
 
@@ -166,7 +166,7 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_mult")
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 18
 text = "3.5"
 horizontal_alignment = 1
 
@@ -175,13 +175,13 @@ unique_name_in_owner = true
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 18
 text = "×"
 
 [node name="XMultBox" type="PanelContainer" parent="VBox/MathRow"]
 unique_name_in_owner = true
 visible = false
-custom_minimum_size = Vector2(70, 0)
+custom_minimum_size = Vector2(50, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_xmult")
 
@@ -189,27 +189,27 @@ theme_override_styles/panel = SubResource("StyleBoxFlat_xmult")
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 18
 text = "1.5"
 horizontal_alignment = 1
 
 [node name="EqualsLabel" type="Label" parent="VBox/MathRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.8, 0.9, 1)
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 18
 text = "="
 
 [node name="ScoreBox" type="PanelContainer" parent="VBox/MathRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(110, 0)
+custom_minimum_size = Vector2(75, 0)
 layout_mode = 2
-pivot_offset = Vector2(55, 22)
+pivot_offset = Vector2(37, 18)
 theme_override_styles/panel = SubResource("StyleBoxFlat_score")
 
 [node name="ScoreLabel" type="Label" parent="VBox/MathRow/ScoreBox"]
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 20
 text = "857"
 horizontal_alignment = 1
