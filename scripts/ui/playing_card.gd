@@ -3,6 +3,7 @@ extends Control
 
 signal card_clicked(card)
 signal selection_changed(card, is_selected: bool)
+signal card_drag_ended(card, drop_global_x: float)
 
 @export var rank: int = 14: # 2 - 14 (14 = Ace)
 	set(val):
@@ -38,6 +39,16 @@ var current_tilt: float = 0.0
 var punch_rot: float = 0.0
 var punch_scale: float = 1.0
 var elevation_y: float = 0.0
+
+# Balatro Drag & Drop Reordering (from balatro-ui-unity / balatro-feel)
+var is_mouse_down: bool = false
+var is_dragging: bool = false
+var was_dragged: bool = false
+var press_time: float = 0.0
+var drag_start_mouse: Vector2 = Vector2.ZERO
+var drag_offset: Vector2 = Vector2.ZERO
+var last_mouse_pos: Vector2 = Vector2.ZERO
+var drag_tilt: float = 0.0
 
 @onready var panel: PanelContainer = $CardPanel
 @onready var rank_label_tl: Label = %RankTopLeft
@@ -97,9 +108,24 @@ func _process(delta: float) -> void:
 	var idle_y: float = cos(t * 2.0 + float(card_index) * 0.7) * 2.2 * idle_mult
 	
 	# 3. Apply composite transformations
-	panel.rotation_degrees = fan_angle + current_tilt + idle_rot + punch_rot
-	panel.position.y = elevation_y + fan_offset_y + idle_y
-	panel.scale = Vector2.ONE * punch_scale
+	if is_dragging:
+		var mouse_pos: Vector2 = get_global_mouse_position()
+		var delta_pos: Vector2 = mouse_pos - last_mouse_pos
+		last_mouse_pos = mouse_pos
+		drag_tilt = lerp(drag_tilt, clampf(delta_pos.x * 1.8, -22.0, 22.0), 16.0 * delta)
+		
+		panel.rotation_degrees = current_tilt + punch_rot + drag_tilt
+		panel.position.y = -28.0 # Lifted above hand
+		panel.scale = Vector2.ONE * 1.14
+		
+		var target_x: float = mouse_pos.x - drag_offset.x
+		var target_y: float = mouse_pos.y - drag_offset.y
+		global_position = global_position.lerp(Vector2(target_x, target_y), 24.0 * delta)
+	else:
+		drag_tilt = lerp(drag_tilt, 0.0, 14.0 * delta)
+		panel.rotation_degrees = fan_angle + current_tilt + idle_rot + punch_rot + drag_tilt
+		panel.position.y = elevation_y + fan_offset_y + idle_y
+		panel.scale = Vector2.ONE * punch_scale
 
 func _update_visuals() -> void:
 	if not is_inside_tree() or rank_label_tl == null:
@@ -179,6 +205,16 @@ func _apply_style() -> void:
 		style.border_color = Color(0.4, 0.2, 0.25, 0.8)
 		style.shadow_size = 4
 		style.shadow_offset = Vector2(0, 2)
+	elif is_dragging:
+		style.bg_color = Color(0.14, 0.16, 0.25, 1.0)
+		style.border_width_left = 3
+		style.border_width_top = 3
+		style.border_width_right = 3
+		style.border_width_bottom = 3
+		style.border_color = Color("#fcd34d") # Golden lift glow
+		style.shadow_color = Color(0, 0, 0, 0.85)
+		style.shadow_size = 28
+		style.shadow_offset = Vector2(0, 24)
 	elif is_selected:
 		style.bg_color = Color(0.12, 0.14, 0.22, 1.0)
 		style.border_width_left = 3
@@ -214,9 +250,33 @@ func _apply_style() -> void:
 	panel.add_theme_stylebox_override("panel", style)
 
 func _on_gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		toggle_select()
-		card_clicked.emit(self)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			is_mouse_down = true
+			was_dragged = false
+			press_time = Time.get_ticks_msec() * 0.001
+			drag_start_mouse = get_global_mouse_position()
+			drag_offset = drag_start_mouse - global_position
+			last_mouse_pos = drag_start_mouse
+		else:
+			is_mouse_down = false
+			var up_time: float = Time.get_ticks_msec() * 0.001
+			if is_dragging:
+				is_dragging = false
+				z_index = 0
+				_apply_style()
+				card_drag_ended.emit(self, global_position.x)
+			elif not was_dragged and (up_time - press_time) < 0.35:
+				toggle_select()
+				card_clicked.emit(self)
+				
+	elif event is InputEventMouseMotion and is_mouse_down:
+		var current_mouse: Vector2 = get_global_mouse_position()
+		if not is_dragging and drag_start_mouse.distance_to(current_mouse) > 10.0:
+			is_dragging = true
+			was_dragged = true
+			z_index = 60
+			_apply_style()
 
 func toggle_select() -> void:
 	set_selected(!is_selected)

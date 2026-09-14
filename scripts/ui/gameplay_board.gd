@@ -59,6 +59,7 @@ var selected_cards: Array = []
 
 const CARD_SCENE = preload("res://scenes/components/playing_card.tscn")
 const JOKER_SCENE = preload("res://scenes/components/joker_card.tscn")
+const SLOT_PLACEHOLDER_SCENE = preload("res://scenes/components/card_slot_placeholder.tscn")
 
 var mock_jokers: Array[Dictionary] = []
 var shake_trauma: float = 0.0
@@ -170,6 +171,19 @@ func _init_mock_jokers() -> void:
 		var j_node = JOKER_SCENE.instantiate()
 		joker_container.add_child(j_node)
 		j_node.setup(j_data["name"], j_data["icon"], j_data["rarity"], j_data["stat"], j_data["desc"])
+		
+	# Fill remaining Joker slots up to 5 with Balatro dashed placeholders
+	var empty_jokers: int = 5 - mock_jokers.size()
+	for i in range(empty_jokers):
+		var p = SLOT_PLACEHOLDER_SCENE.instantiate()
+		joker_container.add_child(p)
+		
+	# Fill Consumable slots with placeholders
+	for child in consumable_container.get_children():
+		child.queue_free()
+	for i in range(2):
+		var p = SLOT_PLACEHOLDER_SCENE.instantiate()
+		consumable_container.add_child(p)
 
 func _deal_initial_hand() -> void:
 	for c in hand_cards:
@@ -192,11 +206,33 @@ func _draw_cards(count: int) -> void:
 		var is_debuffed: bool = is_boss_blind and BossEngine.is_card_debuffed(card_data, active_boss_id, round_context)
 		card_instance.setup(card_data["rank"], card_data["suit"], card_data.get("enhancement", ""), is_debuffed)
 		card_instance.selection_changed.connect(_on_card_selection_changed)
+		card_instance.card_drag_ended.connect(_on_card_drag_ended)
 		hand_cards.append(card_instance)
 		
 	_apply_hand_fanning()
 	_update_hud()
 	_evaluate_selected_cards()
+
+func _on_card_drag_ended(card, drop_global_x: float) -> void:
+	if not hand_cards.has(card):
+		return
+		
+	var current_idx: int = hand_cards.find(card)
+	var new_idx: int = 0
+	
+	for i in range(hand_cards.size()):
+		var other = hand_cards[i]
+		if other != card and is_instance_valid(other):
+			if drop_global_x > (other.global_position.x + other.size.x * 0.5):
+				new_idx = i + 1
+				
+	new_idx = clamp(new_idx, 0, hand_cards.size() - 1)
+	if new_idx != current_idx:
+		hand_cards.erase(card)
+		hand_cards.insert(new_idx, card)
+		hand_container.move_child(card, new_idx)
+		
+	_apply_hand_fanning()
 
 func _apply_hand_fanning() -> void:
 	for i in range(hand_cards.size()):
@@ -414,17 +450,16 @@ func _on_sort_rank_pressed() -> void:
 	_apply_hand_fanning()
 
 func _update_hud() -> void:
-	top_ante_label.text = "Ante %d/%d" % [ante_current, ante_max]
+	top_ante_label.text = "ANTE %d/%d" % [ante_current, ante_max]
 	top_blind_label.text = blind_name
 	
-	var pct: int = int(float(current_score) / max(1, target_score) * 100.0)
-	top_score_label.text = "%d / %d (%d%%)" % [current_score, target_score, pct]
+	top_score_label.text = "%d / %d" % [current_score, target_score]
 	top_score_bar.max_value = target_score
 	top_score_bar.value = current_score
 	
 	top_money_label.text = "🪙 $%d" % money
 	var interest: int = min(5, int(float(money) / 5.0))
-	top_interest_label.text = "Lợi tức: +$%d" % interest
+	top_interest_label.text = "Lãi: +$%d" % interest
 	
 	if boss_banner != null:
 		boss_banner.visible = is_boss_blind
@@ -432,10 +467,10 @@ func _update_hud() -> void:
 			boss_warning_label.text = "⚠️ QUY TẮC BOSS: " + active_boss_data.get("desc", "Quy tắc đặc biệt!")
 			
 	if deck_counter_label != null:
-		deck_counter_label.text = "🃏 Nọc: %d/52" % deck.size()
+		deck_counter_label.text = "🃏 Nọc: %d/52 lá" % deck.size()
 		
-	hands_counter_label.text = "Lượt Đánh: %d/%d" % [hands_left, hands_max]
-	discards_counter_label.text = "Lượt Đổi: %d/%d" % [discards_left, discards_max]
+	hands_counter_label.text = str(hands_left)
+	discards_counter_label.text = str(discards_left)
 
 func _check_round_end() -> void:
 	if current_score >= target_score:
