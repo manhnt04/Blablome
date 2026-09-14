@@ -1,45 +1,213 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="2_menu"]
 [ext_resource type="Material" path="res://resources/shaders/balatro_background_material.tres" id="3_bg"]
 
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu_box"]
-content_margin_left = 32.0
-content_margin_top = 28.0
-content_margin_right = 32.0
-content_margin_bottom = 28.0
-bg_color = Color(0.0901961, 0.0901961, 0.129412, 0.9)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.25, 0.25, 0.35, 1)
-corner_radius_top_left = 16
-corner_radius_top_right = 16
-corner_radius_bottom_right = 16
-corner_radius_bottom_left = 16
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_dock_panel"]
+content_margin_left = 12.0
+content_margin_top = 8.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12, 0.16, 0.22, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.24, 0.32, 0.44, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 shadow_color = Color(0, 0, 0, 0.6)
-shadow_size = 12
+shadow_size = 14
+shadow_offset = Vector2(0, 4)
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_primary_btn"]
-content_margin_left = 20.0
-content_margin_top = 12.0
-content_margin_right = 20.0
-content_margin_bottom = 12.0
-bg_color = Color(0.12, 0.45, 0.85, 1)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_profile_box"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 12.0
+content_margin_bottom = 8.0
+bg_color = Color(0.12, 0.16, 0.22, 0.95)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.24, 0.32, 0.44, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 10
+shadow_offset = Vector2(0, 3)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_profile_btn"]
+content_margin_left = 12.0
+content_margin_top = 4.0
+content_margin_right = 12.0
+content_margin_bottom = 4.0
+bg_color = Color(0.16, 0.22, 0.30, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.4, 0.75, 1, 1)
+border_color = Color(0.35, 0.45, 0.58, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_blue"]
+content_margin_left = 22.0
+content_margin_top = 10.0
+content_margin_right = 22.0
+content_margin_bottom = 10.0
+bg_color = Color(0.08, 0.52, 0.95, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.35, 0.75, 1, 1)
 corner_radius_top_left = 8
 corner_radius_top_right = 8
 corner_radius_bottom_right = 8
 corner_radius_bottom_left = 8
-shadow_color = Color(0.2, 0.5, 1, 0.4)
+shadow_color = Color(0.08, 0.45, 0.85, 0.4)
 shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_orange"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.95, 0.58, 0.05, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.80, 0.35, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.90, 0.50, 0.05, 0.4)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_red"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 10.0
+bg_color = Color(0.92, 0.28, 0.28, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.55, 0.55, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.85, 0.20, 0.20, 0.4)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_green"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+bg_color = Color(0.24, 0.62, 0.48, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.50, 0.85, 0.70, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.18, 0.55, 0.40, 0.4)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_icon_btn"]
+content_margin_left = 8.0
+content_margin_top = 6.0
+content_margin_right = 8.0
+content_margin_bottom = 6.0
+bg_color = Color(0.12, 0.16, 0.22, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.28, 0.38, 0.50, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ace_card"]
+content_margin_left = 8.0
+content_margin_top = 8.0
+content_margin_right = 8.0
+content_margin_bottom = 8.0
+bg_color = Color(0.96, 0.97, 0.98, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.12, 0.14, 0.18, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0.05, 0.50, 0.95, 0.6)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card_glow"]
+bg_color = Color(0.05, 0.55, 1, 0.3)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.05, 0.60, 1, 0.8)
+shadow_size = 32
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_staff_top"]
+bg_color = Color(0.85, 0.90, 0.98, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_color = Color(0.08, 0.10, 0.16, 1)
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_staff_bottom"]
+bg_color = Color(0.85, 0.90, 0.98, 1)
+border_width_left = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.08, 0.10, 0.16, 1)
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal_dialog"]
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+bg_color = Color(0.08, 0.10, 0.16, 0.98)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.25, 0.65, 1, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.8)
+shadow_size = 24
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -61,93 +229,415 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.04, 0.04, 0.06, 1)
 
+[node name="CreditsLabel" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -210.0
+offset_top = 28.0
+offset_right = -32.0
+offset_bottom = 96.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 0.95)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 2
+theme_override_constants/line_spacing = 2
+theme_override_font_sizes/font_size = 13
+text = "Việt hoá bởi
+Cánh Cụt Team
+22.12"
+horizontal_alignment = 2
 
-[node name="Center" type="VBoxContainer" parent="."]
+[node name="HeroAnchor" type="Control" parent="."]
+unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -200.0
-offset_top = -240.0
-offset_right = 200.0
-offset_bottom = 240.0
+offset_left = -400.0
+offset_top = -180.0
+offset_right = 400.0
+offset_bottom = 50.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 28
+
+[node name="HeroLogo" type="HBoxContainer" parent="HeroAnchor"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -380.0
+offset_top = -110.0
+offset_right = 380.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
 alignment = 1
 
-[node name="LogoGroup" type="VBoxContainer" parent="Center"]
+[node name="TitleBAL" type="Label" parent="HeroAnchor/HeroLogo"]
 layout_mode = 2
-alignment = 1
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.06, 0.08, 0.12, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.14, 0.20, 1)
+theme_override_constants/shadow_offset_x = 6
+theme_override_constants/shadow_offset_y = 10
+theme_override_constants/shadow_outline_size = 8
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 106
+text = "BAL"
+horizontal_alignment = 2
+vertical_alignment = 1
 
-[node name="LogoTitle" type="Label" parent="Center/LogoGroup"]
+[node name="AceCardWrapper" type="Control" parent="HeroAnchor/HeroLogo"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(115, 190)
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
-theme_override_colors/font_shadow_color = Color(0.9, 0.3, 0.1, 0.8)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 4
-theme_override_constants/shadow_outline_size = 6
-theme_override_font_sizes/font_size = 46
-text = "BLABLOME"
+
+[node name="CardGlow" type="Panel" parent="HeroAnchor/HeroLogo/AceCardWrapper"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -48.0
+offset_top = -68.0
+offset_right = 48.0
+offset_bottom = 68.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_card_glow")
+
+[node name="StaffTop" type="Panel" parent="HeroAnchor/HeroLogo/AceCardWrapper"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -6.0
+offset_top = -18.0
+offset_right = 6.0
+offset_bottom = 40.0
+grow_horizontal = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_staff_top")
+
+[node name="StaffTopCross" type="Label" parent="HeroAnchor/HeroLogo/AceCardWrapper/StaffTop"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -16.0
+offset_top = -12.0
+offset_right = 16.0
+offset_bottom = 12.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "⚜"
 horizontal_alignment = 1
 
-[node name="LogoSub" type="Label" parent="Center/LogoGroup"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+[node name="StaffBottom" type="Panel" parent="HeroAnchor/HeroLogo/AceCardWrapper"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -6.0
+offset_top = -40.0
+offset_right = 6.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_staff_bottom")
+
+[node name="StaffBottomRibbon" type="Label" parent="HeroAnchor/HeroLogo/AceCardWrapper/StaffBottom"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -14.0
+offset_top = -14.0
+offset_right = 14.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(1, 0.35, 0.35, 1)
 theme_override_font_sizes/font_size = 14
-text = "ANIME ROGUELIKE DECKBUILDER"
+text = "🎗"
 horizontal_alignment = 1
 
-[node name="MenuBox" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(360, 0)
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("StyleBoxFlat_menu_box")
+[node name="AceCard" type="PanelContainer" parent="HeroAnchor/HeroLogo/AceCardWrapper"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(98, 142)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -49.0
+offset_top = -71.0
+offset_right = 49.0
+offset_bottom = 71.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -0.0523599
+pivot_offset = Vector2(49, 71)
+theme_override_styles/panel = SubResource("StyleBoxFlat_ace_card")
 
-[node name="Buttons" type="VBoxContainer" parent="Center/MenuBox"]
+[node name="CardInner" type="Control" parent="HeroAnchor/HeroLogo/AceCardWrapper/AceCard"]
+layout_mode = 2
+
+[node name="TopRank" type="Label" parent="HeroAnchor/HeroLogo/AceCardWrapper/AceCard/CardInner"]
+layout_mode = 1
+offset_left = 2.0
+offset_top = 0.0
+offset_right = 24.0
+offset_bottom = 38.0
+theme_override_colors/font_color = Color(0.12, 0.14, 0.2, 1)
+theme_override_constants/line_spacing = -6
+theme_override_font_sizes/font_size = 15
+text = "A
+♠"
+
+[node name="CenterSpade" type="Label" parent="HeroAnchor/HeroLogo/AceCardWrapper/AceCard/CardInner"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -24.0
+offset_top = -32.0
+offset_right = 24.0
+offset_bottom = 32.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.12, 0.14, 0.2, 1)
+theme_override_font_sizes/font_size = 50
+text = "♠"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="BottomRank" type="Label" parent="HeroAnchor/HeroLogo/AceCardWrapper/AceCard/CardInner"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -24.0
+offset_top = -38.0
+offset_right = -2.0
+offset_bottom = 0.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.12, 0.14, 0.2, 1)
+theme_override_constants/line_spacing = -6
+theme_override_font_sizes/font_size = 15
+text = "A
+♠"
+horizontal_alignment = 2
+
+[node name="TitleTRO" type="Label" parent="HeroAnchor/HeroLogo"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.06, 0.08, 0.12, 1)
+theme_override_colors/font_outline_color = Color(0.12, 0.14, 0.20, 1)
+theme_override_constants/shadow_offset_x = 6
+theme_override_constants/shadow_offset_y = 10
+theme_override_constants/shadow_outline_size = 8
+theme_override_constants/outline_size = 16
+theme_override_font_sizes/font_size = 106
+text = "TRO"
+vertical_alignment = 1
+
+[node name="BottomDockMargin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -112.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_right = 36
+
+[node name="DockHBox" type="HBoxContainer" parent="BottomDockMargin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+alignment = 1
+
+[node name="ProfilePill" type="PanelContainer" parent="BottomDockMargin/DockHBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_profile_box")
+
+[node name="VBox" type="VBoxContainer" parent="BottomDockMargin/DockHBox/ProfilePill"]
+layout_mode = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="ProfileTitle" type="Label" parent="BottomDockMargin/DockHBox/ProfilePill/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.72, 0.85, 1)
+theme_override_font_sizes/font_size = 12
+text = "Hồ Sơ"
+horizontal_alignment = 1
+
+[node name="ProfileButton" type="Button" parent="BottomDockMargin/DockHBox/ProfilePill/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(74, 30)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_profile_btn")
+theme_override_font_sizes/font_size = 14
+text = "P1"
+
+[node name="CenterDockPill" type="PanelContainer" parent="BottomDockMargin/DockHBox"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_dock_panel")
+
+[node name="ButtonRow" type="HBoxContainer" parent="BottomDockMargin/DockHBox/CenterDockPill"]
 layout_mode = 2
 theme_override_constants/separation = 12
+alignment = 1
 
-[node name="NewRunButton" type="Button" parent="Center/MenuBox/Buttons"]
+[node name="NewRunButton" type="Button" parent="BottomDockMargin/DockHBox/CenterDockPill/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(160, 52)
 layout_mode = 2
-theme_override_styles/normal = SubResource("StyleBoxFlat_primary_btn")
-text = "▶ BẮT ĐẦU RUN MỚI"
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_blue")
+theme_override_font_sizes/font_size = 22
+text = "BẮT ĐẦU"
 
-[node name="ContinueButton" type="Button" parent="Center/MenuBox/Buttons"]
+[node name="OptionsButton" type="Button" parent="BottomDockMargin/DockHBox/CenterDockPill/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
+custom_minimum_size = Vector2(120, 52)
 layout_mode = 2
-text = "⏵ TIẾP TỤC RUN"
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_orange")
+theme_override_font_sizes/font_size = 19
+text = "CÀI ĐẶT"
 
-[node name="CollectionButton" type="Button" parent="Center/MenuBox/Buttons"]
+[node name="QuitButton" type="Button" parent="BottomDockMargin/DockHBox/CenterDockPill/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
-text = "📖 BỘ SƯU TẬP"
+custom_minimum_size = Vector2(110, 52)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_red")
+theme_override_font_sizes/font_size = 19
+text = "THOÁT"
 
-[node name="OptionsButton" type="Button" parent="Center/MenuBox/Buttons"]
+[node name="CollectionButton" type="Button" parent="BottomDockMargin/DockHBox/CenterDockPill/ButtonRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
-text = "⚙ TÙY CHỌN"
+custom_minimum_size = Vector2(160, 52)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_green")
+theme_override_font_sizes/font_size = 19
+text = "BỘ SƯU TẬP"
 
-[node name="QuitButton" type="Button" parent="Center/MenuBox/Buttons"]
+[node name="RightDockVBox" type="VBoxContainer" parent="BottomDockMargin/DockHBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="SocialHBox" type="HBoxContainer" parent="BottomDockMargin/DockHBox/RightDockVBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 2
+
+[node name="DiscordBtn" type="Button" parent="BottomDockMargin/DockHBox/RightDockVBox/SocialHBox"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 44)
-text = "✕ THOÁT GAME"
+custom_minimum_size = Vector2(36, 32)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_icon_btn")
+theme_override_font_sizes/font_size = 14
+text = "💬"
 
-[node name="VersionLabel" type="Label" parent="."]
+[node name="XBtn" type="Button" parent="BottomDockMargin/DockHBox/RightDockVBox/SocialHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 32)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_icon_btn")
+theme_override_font_sizes/font_size = 14
+text = "𝕏"
+
+[node name="LanguageBtn" type="Button" parent="BottomDockMargin/DockHBox/RightDockVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(110, 32)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_icon_btn")
+theme_override_font_sizes/font_size = 13
+text = "A/文 English"
+
+[node name="ContinueModal" type="PanelContainer" parent="."]
+unique_name_in_owner = true
+visible = false
 layout_mode = 1
-anchors_preset = 2
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = -36.0
-offset_right = 160.0
-offset_bottom = -16.0
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.4, 0.45, 0.55, 1)
-theme_override_font_sizes/font_size = 12
-text = "v0.1.0 (UI/UX V1)"
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = -130.0
+offset_right = 220.0
+offset_bottom = 130.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal_dialog")
+
+[node name="ModalVBox" type="VBoxContainer" parent="ContinueModal"]
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="ModalTitle" type="Label" parent="ContinueModal/ModalVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 20
+text = "BẠN ĐANG CÓ RUN DỞ DANG"
+horizontal_alignment = 1
+
+[node name="ModalRunInfo" type="Label" parent="ContinueModal/ModalVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.90, 0.98, 1)
+theme_override_font_sizes/font_size = 14
+text = "Ante 1 — Tiền: $4"
+horizontal_alignment = 1
+
+[node name="ModalBtnHBox" type="HBoxContainer" parent="ContinueModal/ModalVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="ModalContinueBtn" type="Button" parent="ContinueModal/ModalVBox/ModalBtnHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_blue")
+text = "▶ TIẾP TỤC"
+
+[node name="ModalNewRunBtn" type="Button" parent="ContinueModal/ModalVBox/ModalBtnHBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_orange")
+text = "🔄 RUN MỚI"
+
+[node name="ModalCancelBtn" type="Button" parent="ContinueModal/ModalVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 36)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "✕ ĐÓNG"

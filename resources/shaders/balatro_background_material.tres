@@ -4,10 +4,10 @@
 
 [resource]
 shader = ExtResource("1_shader")
-shader_parameter/color_primary = Color(0.08, 0.04, 0.16, 1)
-shader_parameter/color_secondary = Color(0.22, 0.06, 0.1, 1)
-shader_parameter/color_tertiary = Color(0.04, 0.1, 0.18, 1)
-shader_parameter/swirl_speed = 0.65
-shader_parameter/swirl_scale = 5.5
-shader_parameter/scanline_strength = 0.12
-shader_parameter/vignette_strength = 0.65
+shader_parameter/color_red = Color(0.88, 0.16, 0.20, 1)
+shader_parameter/color_blue = Color(0.06, 0.46, 0.90, 1)
+shader_parameter/color_dark = Color(0.02, 0.03, 0.06, 1)
+shader_parameter/swirl_speed = 0.75
+shader_parameter/swirl_scale = 4.2
+shader_parameter/scanline_strength = 0.18
+shader_parameter/vignette_strength = 0.95
