@@ -1,15 +1,6 @@
 class_name GameplayBoard
 extends Control
 
-const GameConstants = preload("res://scripts/core/game_constants.gd")
-const HandEvaluator = preload("res://scripts/core/hand_evaluator.gd")
-const BlindSystem = preload("res://scripts/core/blind_system.gd")
-const BossEngine = preload("res://scripts/core/boss_engine.gd")
-const DeckManager = preload("res://scripts/core/deck_manager.gd")
-const PlayingCard = preload("res://scripts/ui/playing_card.gd")
-const JokerCard = preload("res://scripts/ui/joker_card.gd")
-const ScoringHUD = preload("res://scripts/ui/scoring_hud.gd")
-
 signal run_to_shop_requested()
 signal pause_requested()
 
@@ -372,8 +363,8 @@ func _on_play_hand_pressed() -> void:
 		c.reparent(played_container)
 		c.is_selected = false
 		c.scale = Vector2(1.15, 1.15)
-		c.rotation_degrees = randf_range(-7.0, 7.0)
-		var tw_card := c.create_tween().set_parallel(true)
+		var tw_card: Tween = c.create_tween()
+		tw_card.set_parallel(true)
 		tw_card.tween_property(c, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		
 	var tw := create_tween()

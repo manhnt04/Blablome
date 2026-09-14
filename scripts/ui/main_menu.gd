@@ -14,12 +14,17 @@ signal options_requested()
 
 func _ready() -> void:
 	new_run_btn.pressed.connect(func():
+		new_run_requested.emit()
 		get_tree().change_scene_to_file("res://scenes/screens/character_select.tscn")
 	)
 	continue_btn.disabled = true # No save yet in V1
 	continue_btn.text = "TIẾP TỤC RUN (Chưa có save)"
+	continue_btn.pressed.connect(func():
+		continue_requested.emit()
+	)
 	
 	collection_btn.pressed.connect(func():
+		collection_requested.emit()
 		get_tree().change_scene_to_file("res://scenes/screens/collection.tscn")
 	)
 	options_btn.pressed.connect(func(): options_requested.emit())

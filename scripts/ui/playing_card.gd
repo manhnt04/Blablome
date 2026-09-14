@@ -1,9 +1,6 @@
 class_name PlayingCard
 extends Control
 
-const GameConstants = preload("res://scripts/core/game_constants.gd")
-const HandEvaluator = preload("res://scripts/core/hand_evaluator.gd")
-
 signal card_clicked(card)
 signal selection_changed(card, is_selected: bool)
 
@@ -231,7 +228,8 @@ func set_selected(val: bool) -> void:
 	
 	# Select Punch Animation (Balatro feel)
 	punch_rot = 6.0 * (1.0 if randf() > 0.5 else -1.0)
-	var tw_punch := create_tween().set_parallel(true)
+	var tw_punch: Tween = create_tween()
+	tw_punch.set_parallel(true)
 	tw_punch.tween_property(self, "punch_rot", 0.0, 0.2).set_trans(Tween.TRANS_SPRING).set_ease(Tween.EASE_OUT)
 	
 	var target_scale: float = 1.06 if is_selected else (1.08 if is_hovered else 1.0)

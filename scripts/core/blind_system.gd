@@ -1,8 +1,6 @@
 class_name BlindSystem
 extends RefCounted
 
-const GameConstants = preload("res://scripts/core/game_constants.gd")
-
 # Ported directly from balatro-gba blind.c:
 # static const u32 ANTE_LUT[] = {100, 300, 800, 2000, 5000, 11000, 20000, 35000, 50000};
 const ANTE_LUT: Array[int] = [100, 300, 800, 2000, 5000, 11000, 20000, 35000, 50000]

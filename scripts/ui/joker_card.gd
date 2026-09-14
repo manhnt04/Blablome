@@ -1,8 +1,6 @@
 class_name JokerCard
 extends Control
 
-const GameConstants = preload("res://scripts/core/game_constants.gd")
-
 signal joker_clicked(joker)
 
 @export var joker_name: String = "Tiêu Viêm"
@@ -88,7 +86,7 @@ func _apply_style() -> void:
 		
 	panel.add_theme_stylebox_override("panel", style)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if not is_inside_tree() or panel == null:
 		return
 	var t: float = Time.get_ticks_msec() * 0.001

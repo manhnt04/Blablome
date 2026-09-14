@@ -1,8 +1,6 @@
 class_name BossEngine
 extends RefCounted
 
-const GameConstants = preload("res://scripts/core/game_constants.gd")
-
 const BOSS_CATALOG: Dictionary = {
 	# Suit Debuffers
 	"the_club": {

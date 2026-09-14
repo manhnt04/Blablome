@@ -1,8 +1,6 @@
 class_name HandEvaluator
 extends RefCounted
 
-const GameConstants = preload("res://scripts/core/game_constants.gd")
-
 ## Utility to evaluate poker hands from selected cards
 
 static func get_card_chips(rank: int) -> int:
