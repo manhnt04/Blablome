@@ -313,11 +313,26 @@ func _on_card_drag_ended(card, drop_global_x: float) -> void:
 				
 	new_idx = clamp(new_idx, 0, hand_cards.size() - 1)
 	if new_idx != current_idx:
+		var dir: float = 1.0 if new_idx > current_idx else -1.0
 		hand_cards.erase(card)
 		hand_cards.insert(new_idx, card)
 		hand_container.move_child(card, new_idx)
 		
+		# Mix and Jam: Swap shudder punch on displaced neighbor
+		if hand_cards.size() > 1:
+			var neighbor_idx = clamp(new_idx + (-1 if dir > 0 else 1), 0, hand_cards.size() - 1)
+			var neighbor = hand_cards[neighbor_idx]
+			if is_instance_valid(neighbor) and neighbor.has_method("punch_swap"):
+				neighbor.punch_swap(-dir)
+		if card.has_method("punch_swap"):
+			card.punch_swap(dir)
+			
+		var sm = get_node_or_null("/root/SoundManager")
+		if sm != null:
+			sm.play_card_click()
+		
 	_apply_hand_fanning()
+
 
 func _apply_hand_fanning() -> void:
 	for i in range(hand_cards.size()):
@@ -497,6 +512,23 @@ func _on_discard_pressed() -> void:
 	_update_hud()
 
 
+func _cascade_sort_punch() -> void:
+	if not is_inside_tree():
+		return
+	var sm = get_node_or_null("/root/SoundManager")
+	if sm != null:
+		sm.play_card_click()
+	for i in range(hand_cards.size()):
+		var c = hand_cards[i]
+		if is_instance_valid(c) and c.has_method("punch_swap"):
+			var delay: float = float(i) * 0.025
+			var tw = create_tween()
+			tw.tween_interval(delay)
+			tw.tween_callback(func():
+				if is_instance_valid(c) and c.has_method("punch_swap"):
+					c.punch_swap(1.0 if (i % 2 == 0) else -1.0)
+			)
+
 func _on_sort_suit_pressed() -> void:
 	hand_cards.sort_custom(func(a, b):
 		if a.suit != b.suit:
@@ -506,6 +538,7 @@ func _on_sort_suit_pressed() -> void:
 	for i in range(hand_cards.size()):
 		hand_container.move_child(hand_cards[i], i)
 	_apply_hand_fanning()
+	_cascade_sort_punch()
 
 func _on_sort_rank_pressed() -> void:
 	hand_cards.sort_custom(func(a, b):
@@ -516,6 +549,7 @@ func _on_sort_rank_pressed() -> void:
 	for i in range(hand_cards.size()):
 		hand_container.move_child(hand_cards[i], i)
 	_apply_hand_fanning()
+	_cascade_sort_punch()
 
 func _update_hud() -> void:
 	top_ante_label.text = "ANTE %d/%d" % [ante_current, ante_max]

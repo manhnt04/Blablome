@@ -19,9 +19,12 @@ var is_hovered: bool = false
 
 func _ready() -> void:
 	custom_minimum_size = Vector2(96, 120)
-	gui_input.connect(_on_gui_input)
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
+	if not gui_input.is_connected(_on_gui_input):
+		gui_input.connect(_on_gui_input)
+	if not mouse_entered.is_connected(_on_mouse_entered):
+		mouse_entered.connect(_on_mouse_entered)
+	if not mouse_exited.is_connected(_on_mouse_exited):
+		mouse_exited.connect(_on_mouse_exited)
 	_update_visuals()
 
 func setup(p_name: String, p_icon: String, p_rarity: GameConstants.Rarity, p_stat: String, p_desc: String, p_cost: int = 4) -> void:
@@ -103,17 +106,21 @@ func _on_gui_input(event: InputEvent) -> void:
 
 func _on_mouse_entered() -> void:
 	is_hovered = true
-	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(panel, "scale", Vector2(1.12, 1.12), 0.14)
+	if is_inside_tree() and panel != null:
+		var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(panel, "scale", Vector2(1.12, 1.12), 0.14)
 	_apply_style()
 
 func _on_mouse_exited() -> void:
 	is_hovered = false
-	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(panel, "scale", Vector2.ONE, 0.14)
+	if is_inside_tree() and panel != null:
+		var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		tw.tween_property(panel, "scale", Vector2.ONE, 0.14)
 	_apply_style()
 
 func pulse_trigger() -> void:
+	if not is_inside_tree() or panel == null:
+		return
 	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tw.tween_property(panel, "scale", Vector2(1.25, 1.25), 0.12)
 	tw.tween_property(panel, "scale", Vector2.ONE, 0.18)
