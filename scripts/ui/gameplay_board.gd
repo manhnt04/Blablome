@@ -61,6 +61,7 @@ const CARD_SCENE = preload("res://scenes/components/playing_card.tscn")
 const JOKER_SCENE = preload("res://scenes/components/joker_card.tscn")
 
 var mock_jokers: Array[Dictionary] = []
+var shake_trauma: float = 0.0
 
 func _ready() -> void:
 	play_button.pressed.connect(_on_play_hand_pressed)
@@ -75,6 +76,18 @@ func _ready() -> void:
 	_init_mock_jokers()
 	_update_hud()
 	_deal_initial_hand()
+
+func _process(delta: float) -> void:
+	# Balatro Trauma-based Screen/Board Shake
+	if shake_trauma > 0.0:
+		shake_trauma = max(0.0, shake_trauma - delta * 2.8)
+		var shake_power: float = shake_trauma * shake_trauma * 16.0
+		$MainLayout.position = Vector2(randf_range(-shake_power, shake_power), randf_range(-shake_power, shake_power))
+	elif $MainLayout.position != Vector2.ZERO:
+		$MainLayout.position = Vector2.ZERO
+
+func trigger_screen_shake(amount: float = 0.5) -> void:
+	shake_trauma = clampf(shake_trauma + amount, 0.0, 1.0)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept") or (event is InputEventKey and event.keycode == KEY_SPACE and event.pressed):
@@ -132,8 +145,15 @@ func _draw_cards(count: int) -> void:
 		card_instance.selection_changed.connect(_on_card_selection_changed)
 		hand_cards.append(card_instance)
 		
+	_apply_hand_fanning()
 	_update_hud()
 	_evaluate_selected_cards()
+
+func _apply_hand_fanning() -> void:
+	for i in range(hand_cards.size()):
+		var c = hand_cards[i]
+		if is_instance_valid(c) and c.has_method("set_card_index"):
+			c.set_card_index(i, hand_cards.size())
 
 func _on_card_selection_changed(card, is_selected: bool) -> void:
 	if is_selected:
@@ -250,6 +270,15 @@ func _on_play_hand_pressed() -> void:
 	scoring_hud.update_display(eval["name"], 1, final_chips, final_mult, final_xmult, false)
 	scoring_hud.pop_score_animation()
 	
+	# Balatro Impact Screen Shake
+	var shake_force: float = 0.35 if scored_points < 800 else 0.75
+	trigger_screen_shake(shake_force)
+	
+	# Staggered Joker Pulses
+	for j_node in joker_container.get_children():
+		if is_instance_valid(j_node) and j_node.has_method("pulse_trigger"):
+			j_node.pulse_trigger()
+	
 	# Broadcast combo trace
 	var j_names: String = " + ".join(j_bonus["triggers"]) if not j_bonus["triggers"].is_empty() else "Cơ bản"
 	scoring_trace_label.text = "💥 %s! (%d Chips × %.1f Mult%s) ➔ KÍCH HOẠT: %s ➔ +%d ĐIỂM!" % [
@@ -259,7 +288,7 @@ func _on_play_hand_pressed() -> void:
 	
 	_update_hud()
 	
-	# Animate played cards to played area then discard
+	# Animate played cards to played area with rotation punch then discard
 	var cards_to_remove := selected_cards.duplicate()
 	selected_cards.clear()
 	
@@ -267,9 +296,13 @@ func _on_play_hand_pressed() -> void:
 		hand_cards.erase(c)
 		c.reparent(played_container)
 		c.is_selected = false
+		c.scale = Vector2(1.15, 1.15)
+		c.rotation_degrees = randf_range(-7.0, 7.0)
+		var tw_card := c.create_tween().set_parallel(true)
+		tw_card.tween_property(c, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		
 	var tw := create_tween()
-	tw.tween_interval(0.4)
+	tw.tween_interval(0.45)
 	tw.tween_callback(func():
 		for c in cards_to_remove:
 			c.queue_free()
@@ -282,6 +315,7 @@ func _on_discard_pressed() -> void:
 		return
 		
 	discards_left -= 1
+	trigger_screen_shake(0.25)
 	var count_to_replace: int = selected_cards.size()
 	var cards_to_remove := selected_cards.duplicate()
 	selected_cards.clear()
@@ -301,6 +335,7 @@ func _on_sort_suit_pressed() -> void:
 	)
 	for i in range(hand_cards.size()):
 		hand_container.move_child(hand_cards[i], i)
+	_apply_hand_fanning()
 
 func _on_sort_rank_pressed() -> void:
 	hand_cards.sort_custom(func(a, b):
@@ -310,6 +345,7 @@ func _on_sort_rank_pressed() -> void:
 	)
 	for i in range(hand_cards.size()):
 		hand_container.move_child(hand_cards[i], i)
+	_apply_hand_fanning()
 
 func _update_hud() -> void:
 	top_ante_label.text = "Ante %d/%d" % [ante_current, ante_max]

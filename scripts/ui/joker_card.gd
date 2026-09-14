@@ -75,29 +75,47 @@ func _apply_style() -> void:
 	style.border_width_bottom = 2
 	
 	if is_hovered:
-		style.bg_color = Color("#222232")
-		style.shadow_color = r_color.lerp(Color.WHITE, 0.3)
-		style.shadow_color.a = 0.5
-		style.shadow_size = 8
+		style.bg_color = Color(0.12, 0.14, 0.22, 1.0)
+		style.shadow_color = r_color.lerp(Color.WHITE, 0.4)
+		style.shadow_color.a = 0.6
+		style.shadow_size = 12
+		style.shadow_offset = Vector2(0, 6)
 	else:
-		style.bg_color = Color("#14141e")
-		style.shadow_color = Color(0, 0, 0, 0.4)
+		style.bg_color = Color(0.06, 0.07, 0.11, 1.0)
+		style.shadow_color = Color(0, 0, 0, 0.45)
 		style.shadow_size = 4
+		style.shadow_offset = Vector2(0, 2)
 		
 	panel.add_theme_stylebox_override("panel", style)
 
+func _process(delta: float) -> void:
+	if not is_inside_tree() or panel == null:
+		return
+	var t: float = Time.get_ticks_msec() * 0.001
+	var idx: float = float(get_index())
+	var sway_rot: float = sin(t * 1.8 + idx * 0.9) * (0.6 if is_hovered else 1.2)
+	var sway_y: float = cos(t * 1.6 + idx * 0.8) * (0.8 if is_hovered else 2.0)
+	panel.rotation_degrees = sway_rot
+	panel.position.y = (-6.0 if is_hovered else 0.0) + sway_y
+
 func _on_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		pulse_trigger()
 		joker_clicked.emit(self)
 
 func _on_mouse_entered() -> void:
 	is_hovered = true
-	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(panel, "scale", Vector2(1.06, 1.06), 0.1)
+	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(panel, "scale", Vector2(1.12, 1.12), 0.14)
 	_apply_style()
 
 func _on_mouse_exited() -> void:
 	is_hovered = false
 	var tw := create_tween().set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tw.tween_property(panel, "scale", Vector2.ONE, 0.1)
+	tw.tween_property(panel, "scale", Vector2.ONE, 0.14)
 	_apply_style()
+
+func pulse_trigger() -> void:
+	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(panel, "scale", Vector2(1.25, 1.25), 0.12)
+	tw.tween_property(panel, "scale", Vector2.ONE, 0.18)
