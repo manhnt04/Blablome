@@ -351,7 +351,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 17
-text = "CHỌN ĐỦ 5 LÁ (0/5)"
+text = "CHỌN LÁ ĐỂ ĐÁNH (0/5)"
 
 [node name="DiscardButton" type="Button" parent="MainLayout/LeftSidebar/SidebarVBox/ButtonsGroup"]
 unique_name_in_owner = true
@@ -369,65 +369,74 @@ theme_override_font_sizes/font_size = 13
 text = "🃏 Nọc: 52/52 lá"
 horizontal_alignment = 1
 
-[node name="CenterArea" type="VBoxContainer" parent="MainLayout"]
+[node name="CenterArea" type="Control" parent="MainLayout"]
 layout_mode = 2
 size_flags_horizontal = 3
+
+[node name="BoardShakeContainer" type="VBoxContainer" parent="MainLayout/CenterArea"]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 theme_override_constants/separation = 8
 
-[node name="TopRacks" type="MarginContainer" parent="MainLayout/CenterArea"]
+[node name="TopRacks" type="MarginContainer" parent="MainLayout/CenterArea/BoardShakeContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 12
 theme_override_constants/margin_right = 16
 
-[node name="RacksHBox" type="HBoxContainer" parent="MainLayout/CenterArea/TopRacks"]
+[node name="RacksHBox" type="HBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/TopRacks"]
 layout_mode = 2
 theme_override_constants/separation = 24
 
-[node name="JokerSection" type="VBoxContainer" parent="MainLayout/CenterArea/TopRacks/RacksHBox"]
+[node name="JokerSection" type="VBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/TopRacks/RacksHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="JokerTitle" type="Label" parent="MainLayout/CenterArea/TopRacks/RacksHBox/JokerSection"]
+[node name="JokerTitle" type="Label" parent="MainLayout/CenterArea/BoardShakeContainer/TopRacks/RacksHBox/JokerSection"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.72, 0.85, 1)
 theme_override_font_sizes/font_size = 12
 text = "JOKERS (5/5)"
 
-[node name="JokerContainer" type="HBoxContainer" parent="MainLayout/CenterArea/TopRacks/RacksHBox/JokerSection"]
+[node name="JokerContainer" type="HBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/TopRacks/RacksHBox/JokerSection"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ConsumableSection" type="VBoxContainer" parent="MainLayout/CenterArea/TopRacks/RacksHBox"]
+[node name="ConsumableSection" type="VBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/TopRacks/RacksHBox"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="ConsumableTitle" type="Label" parent="MainLayout/CenterArea/TopRacks/RacksHBox/ConsumableSection"]
+[node name="ConsumableTitle" type="Label" parent="MainLayout/CenterArea/BoardShakeContainer/TopRacks/RacksHBox/ConsumableSection"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.72, 0.85, 1)
 theme_override_font_sizes/font_size = 12
 text = "VẬT PHẨM (0/2)"
 
-[node name="ConsumableContainer" type="HBoxContainer" parent="MainLayout/CenterArea/TopRacks/RacksHBox/ConsumableSection"]
+[node name="ConsumableContainer" type="HBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/TopRacks/RacksHBox/ConsumableSection"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 128)
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="StageMiddle" type="VBoxContainer" parent="MainLayout/CenterArea"]
+[node name="StageMiddle" type="VBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer"]
 layout_mode = 2
 size_flags_vertical = 3
 alignment = 1
 theme_override_constants/separation = 8
 
-[node name="PlayedArea" type="Control" parent="MainLayout/CenterArea/StageMiddle"]
+[node name="PlayedArea" type="Control" parent="MainLayout/CenterArea/BoardShakeContainer/StageMiddle"]
 custom_minimum_size = Vector2(0, 160)
 layout_mode = 2
 
-[node name="PlayedContainer" type="HBoxContainer" parent="MainLayout/CenterArea/StageMiddle/PlayedArea"]
+[node name="PlayedContainer" type="HBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/StageMiddle/PlayedArea"]
 unique_name_in_owner = true
 layout_mode = 1
 anchors_preset = 8
@@ -440,48 +449,48 @@ grow_vertical = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-[node name="HandStage" type="MarginContainer" parent="MainLayout/CenterArea"]
+[node name="HandStage" type="MarginContainer" parent="MainLayout/CenterArea/BoardShakeContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 8
 
-[node name="HandContainer" type="HBoxContainer" parent="MainLayout/CenterArea/HandStage"]
+[node name="HandContainer" type="HBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/HandStage"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 175)
 layout_mode = 2
 theme_override_constants/separation = 12
 alignment = 1
 
-[node name="BottomActionBar" type="MarginContainer" parent="MainLayout/CenterArea"]
+[node name="BottomActionBar" type="MarginContainer" parent="MainLayout/CenterArea/BoardShakeContainer"]
 layout_mode = 2
 theme_override_constants/margin_left = 20
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 12
 
-[node name="ActionHBox" type="HBoxContainer" parent="MainLayout/CenterArea/BottomActionBar"]
+[node name="ActionHBox" type="HBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/BottomActionBar"]
 layout_mode = 2
 theme_override_constants/separation = 16
 alignment = 1
 
-[node name="SortGroup" type="HBoxContainer" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox"]
+[node name="SortGroup" type="HBoxContainer" parent="MainLayout/CenterArea/BoardShakeContainer/BottomActionBar/ActionHBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="SortSuitButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/SortGroup"]
+[node name="SortSuitButton" type="Button" parent="MainLayout/CenterArea/BoardShakeContainer/BottomActionBar/ActionHBox/SortGroup"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 42)
 layout_mode = 2
 text = "SẮP XẾP: HỆ"
 
-[node name="SortRankButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/SortGroup"]
+[node name="SortRankButton" type="Button" parent="MainLayout/CenterArea/BoardShakeContainer/BottomActionBar/ActionHBox/SortGroup"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(130, 42)
 layout_mode = 2
 text = "SẮP XẾP: SỐ"
 
-[node name="BotAssistButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/SortGroup"]
+[node name="BotAssistButton" type="Button" parent="MainLayout/CenterArea/BoardShakeContainer/BottomActionBar/ActionHBox/SortGroup"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(140, 42)
 layout_mode = 2

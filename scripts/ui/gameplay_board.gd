@@ -217,15 +217,15 @@ func _setup_current_blind() -> void:
 
 
 func _process(delta: float) -> void:
-	# Balatro Trauma Shake on Center Area only (Left Menu is fixed and immovable)
-	var center_area = get_node_or_null("MainLayout/CenterArea")
+	# Balatro Trauma Shake on board contents only (Left Menu is 100% fixed and immovable)
+	var shake_container = get_node_or_null("%BoardShakeContainer")
 	if shake_trauma > 0.0:
 		shake_trauma = max(0.0, shake_trauma - delta * 2.8)
 		var shake_power: float = shake_trauma * shake_trauma * 16.0
-		if center_area != null:
-			center_area.position = Vector2(randf_range(-shake_power, shake_power), randf_range(-shake_power, shake_power))
-	elif center_area != null and center_area.position != Vector2.ZERO:
-		center_area.position = Vector2.ZERO
+		if shake_container != null:
+			shake_container.position = Vector2(randf_range(-shake_power, shake_power), randf_range(-shake_power, shake_power))
+	elif shake_container != null and shake_container.position != Vector2.ZERO:
+		shake_container.position = Vector2.ZERO
 
 func trigger_screen_shake(amount: float = 0.5) -> void:
 	shake_trauma = clampf(shake_trauma + amount, 0.0, 1.0)
