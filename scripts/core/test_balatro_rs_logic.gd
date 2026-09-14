@@ -123,24 +123,20 @@ func _test_run_state_machine_cycle() -> void:
 	assert(sm.hand_cards.size() == 8, "Hand cards must be 8")
 	print("  ✓ Select Blind: Hand size %d, Hands left %d" % [sm.hand_cards.size(), sm.hands_left])
 	
-	# Test: Selecting < 5 cards fails to play
+	# Test: Selecting 0 cards fails to play
+	var fail_res = sm.play_hand()
+	assert(fail_res["success"] == false, "Playing 0 cards must fail")
+	
+	# Select 2 cards (Valid Balatro play: e.g. Pair or High Card)
 	sm.select_card(0)
 	sm.select_card(1)
-	sm.select_card(2)
-	assert(sm.selected_indices.size() == 3, "3 cards selected")
-	var fail_res = sm.play_hand()
-	assert(fail_res["success"] == false, "Playing < 5 cards must fail")
-	
-	# Select 2 more cards to reach 5 cards
-	sm.select_card(3)
-	sm.select_card(4)
-	assert(sm.selected_indices.size() == 5, "5 cards must be selected")
+	assert(sm.selected_indices.size() == 2, "2 cards selected")
 	
 	var res = sm.play_hand()
-	assert(res["success"] == true, "Play hand with 5 cards must succeed")
+	assert(res["success"] == true, "Play hand with 2 cards must succeed")
 	assert(sm.hands_left == 3, "Hands left must decrement to 3")
 	assert(sm.hand_cards.size() == 8, "Hand cards must be replenished to 8")
-	print("  ✓ Play Hand (5 cards): Scored %d with %s. Score: %d/%d" % [res["scored_points"], res["hand_name"], sm.current_score, sm.target_score])
+	print("  ✓ Play Hand (2 cards): Scored %d with %s. Score: %d/%d" % [res["scored_points"], res["hand_name"], sm.current_score, sm.target_score])
 	
 	# Force reach target score to test POST_BLIND
 	sm.current_score = sm.target_score - 10

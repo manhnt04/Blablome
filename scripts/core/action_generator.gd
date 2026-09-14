@@ -99,13 +99,13 @@ static func get_legal_actions(sm: RunStateMachine) -> Array[Dictionary]:
 				"desc": "Sắp xếp bài theo Số (Rank)"
 			})
 
-			# Play Hand action (Requires exactly 5 cards)
-			if sm.selected_indices.size() == 5 and sm.hands_left > 0:
+			# Play Hand action (1 to 5 cards)
+			if not sm.selected_indices.is_empty() and sm.selected_indices.size() <= 5 and sm.hands_left > 0:
 				actions.append({
 					"type": ActionType.PLAY_HAND,
 					"name": "PLAY_HAND",
-					"count": 5,
-					"desc": "Đánh 5 lá bài đã chọn"
+					"count": sm.selected_indices.size(),
+					"desc": "Đánh bài (%d lá đã chọn)" % sm.selected_indices.size()
 				})
 
 			# Discard Hand action

@@ -156,6 +156,7 @@ theme_override_constants/separation = 0
 [node name="LeftSidebar" type="PanelContainer" parent="MainLayout"]
 custom_minimum_size = Vector2(290, 0)
 layout_mode = 2
+size_flags_horizontal = 0
 theme_override_styles/panel = SubResource("StyleBoxFlat_sidebar")
 
 [node name="SidebarVBox" type="VBoxContainer" parent="MainLayout/LeftSidebar"]
@@ -254,12 +255,14 @@ size_flags_horizontal = 3
 
 [node name="ScoringTraceLabel" type="Label" parent="MainLayout/LeftSidebar/SidebarVBox"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.75, 0.95, 1)
 theme_override_font_sizes/font_size = 12
-text = "Chọn đủ 5 lá bài để đánh"
+text = "Chọn từ 1 đến 5 lá bài để đánh"
 horizontal_alignment = 1
 autowrap_mode = 2
+clip_text = true
 
 [node name="ActionCountersHBox" type="HBoxContainer" parent="MainLayout/LeftSidebar/SidebarVBox"]
 layout_mode = 2

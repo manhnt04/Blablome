@@ -238,10 +238,10 @@ func get_selected_cards() -> Array[Dictionary]:
 			res.append(hand_cards[idx])
 	return res
 
-## Action: Play selected cards (Requires exactly 5 cards)
+## Action: Play selected cards (1 to 5 cards)
 func play_hand() -> Dictionary:
-	if stage != Stage.BLIND or selected_indices.size() != 5 or hands_left <= 0:
-		return {"success": false, "error": "Invalid state or must select exactly 5 cards"}
+	if stage != Stage.BLIND or selected_indices.is_empty() or selected_indices.size() > 5 or hands_left <= 0:
+		return {"success": false, "error": "Invalid state or must select 1 to 5 cards"}
 		
 	var selected_cards = get_selected_cards()
 	var eval = poker_hands.evaluate(selected_cards)

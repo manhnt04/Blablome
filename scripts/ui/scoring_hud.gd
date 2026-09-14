@@ -78,7 +78,9 @@ func update_display(hand_name: String, level: int, chips: int, mult: float, xmul
 		score_label.text = str(current_score)
 
 func pop_score_animation() -> void:
-	var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	tw.tween_property(score_box, "scale", Vector2(1.25, 1.25), 0.15)
-	tw.tween_property(score_box, "scale", Vector2.ONE, 0.15)
+	if score_box != null:
+		score_box.pivot_offset = score_box.size * 0.5
+		var tw := create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(score_box, "scale", Vector2(1.15, 1.15), 0.12)
+		tw.tween_property(score_box, "scale", Vector2.ONE, 0.12)
 

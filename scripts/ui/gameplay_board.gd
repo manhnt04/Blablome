@@ -217,13 +217,15 @@ func _setup_current_blind() -> void:
 
 
 func _process(delta: float) -> void:
-	# Balatro Trauma-based Screen/Board Shake
+	# Balatro Trauma Shake on Center Area only (Left Menu is fixed and immovable)
+	var center_area = get_node_or_null("MainLayout/CenterArea")
 	if shake_trauma > 0.0:
 		shake_trauma = max(0.0, shake_trauma - delta * 2.8)
 		var shake_power: float = shake_trauma * shake_trauma * 16.0
-		$MainLayout.position = Vector2(randf_range(-shake_power, shake_power), randf_range(-shake_power, shake_power))
-	elif $MainLayout.position != Vector2.ZERO:
-		$MainLayout.position = Vector2.ZERO
+		if center_area != null:
+			center_area.position = Vector2(randf_range(-shake_power, shake_power), randf_range(-shake_power, shake_power))
+	elif center_area != null and center_area.position != Vector2.ZERO:
+		center_area.position = Vector2.ZERO
 
 func trigger_screen_shake(amount: float = 0.5) -> void:
 	shake_trauma = clampf(shake_trauma + amount, 0.0, 1.0)
@@ -448,7 +450,7 @@ func _calculate_joker_contributions(scoring_cards: Array, hand_name: String = ""
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("ui_accept") or (event is InputEventKey and event.pressed and event.keycode == KEY_SPACE):
-		if selected_cards.size() == 5 and hands_left > 0:
+		if not selected_cards.is_empty() and selected_cards.size() <= 5 and hands_left > 0:
 			_on_play_hand_pressed()
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_D:
 		if not selected_cards.is_empty() and discards_left > 0:
@@ -459,14 +461,13 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _evaluate_selected_cards() -> void:
 	var count: int = selected_cards.size()
-	if count < 5:
-		var name_text = "Chưa đủ 5 lá (%d/5)" % count if count > 0 else "Chưa chọn lá (0/5)"
-		scoring_hud.update_display(name_text, 1, 0, 0, 1.0, false)
-		scoring_trace_label.text = "⚠️ Bắt buộc chọn đủ 5 lá bài (%d/5)" % count
-		scoring_trace_label.modulate = Color(0.9, 0.75, 0.4)
+	if count == 0:
+		scoring_hud.update_display("Chưa chọn lá (0/5)", 1, 0, 0, 1.0, false)
+		scoring_trace_label.text = "Chọn từ 1 đến 5 lá bài để đánh"
+		scoring_trace_label.modulate = Color(0.7, 0.8, 0.95)
 		play_button.disabled = true
-		play_button.text = "CHỌN ĐỦ 5 LÁ (%d/5)" % count
-		discard_button.disabled = (count == 0 or discards_left <= 0)
+		play_button.text = "CHỌN LÁ ĐỂ ĐÁNH (0/5)"
+		discard_button.disabled = true
 		discard_button.text = "BỎ LÁ (D) [%d]" % discards_left
 		return
 		
@@ -488,13 +489,13 @@ func _evaluate_selected_cards() -> void:
 	scoring_trace_label.modulate = Color(0.38, 0.74, 0.97)
 	
 	play_button.disabled = (hands_left <= 0)
-	play_button.text = "ĐÁNH BÀI (Space)"
+	play_button.text = "ĐÁNH BÀI (Space) [%d/5]" % count
 	discard_button.disabled = (discards_left <= 0)
 	discard_button.text = "BỎ LÁ (D) [%d]" % discards_left
 
 func _on_play_hand_pressed() -> void:
-	if selected_cards.size() != 5:
-		scoring_trace_label.text = "⛔ BẮT BUỘC PHẢI CHỌN ĐỦ 5 LÁ BÀI!"
+	if selected_cards.is_empty() or selected_cards.size() > 5:
+		scoring_trace_label.text = "⛔ Chọn từ 1 đến 5 lá bài để đánh!"
 		scoring_trace_label.modulate = Color(1.0, 0.3, 0.3)
 		trigger_screen_shake(0.35)
 		return

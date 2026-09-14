@@ -23,24 +23,30 @@ func _init() -> void:
 	assert(board.hand_cards.size() == 8, "Initial hand size must be 8")
 	print("[PASS] Hand cards dealt: %d cards" % board.hand_cards.size())
 	
-	# Test card selection: 2 cards (not yet 5)
+	# Initially 0 cards selected -> Play disabled
+	assert(board.selected_cards.is_empty(), "Initial selected cards must be empty")
+	assert(board.play_button.disabled == true, "Play button must be disabled when 0 cards selected")
+	print("[PASS] 0 cards selected -> Play disabled as expected.")
+	
+	# Test card selection: 2 cards (Valid hand in Balatro: e.g. Pair or High Card)
 	var card1 = board.hand_cards[0]
 	var card2 = board.hand_cards[1]
 	card1.set_selected(true)
 	card2.set_selected(true)
 	assert(board.selected_cards.size() == 2, "2 cards must be selected")
-	assert(board.play_button.disabled == true, "Play button must remain disabled when < 5 cards")
-	print("[PASS] 2 cards selected -> Play disabled as expected (requires 5 cards).")
+	assert(board.play_button.disabled == false, "Play button must be enabled when 2 cards selected (Balatro allows 1-5 cards)")
+	assert(board.scoring_hud.current_score > 0, "Current score must be > 0 when cards selected")
+	print("[PASS] 2 cards selected -> Play enabled! Projected: %d pts" % board.scoring_hud.current_score)
 	
 	# Select 3 more cards to reach 5
 	board.hand_cards[2].set_selected(true)
 	board.hand_cards[3].set_selected(true)
 	board.hand_cards[4].set_selected(true)
 	assert(board.selected_cards.size() == 5, "5 cards must be selected")
-	assert(board.play_button.disabled == false, "Play button must be enabled when exactly 5 cards selected")
+	assert(board.play_button.disabled == false, "Play button must be enabled when 5 cards selected")
 	assert(board.scoring_hud.current_score > 0, "Current score must be > 0 when 5 cards selected")
 	assert(board.scoring_hud.preview_badge.visible == true, "Preview badge must be visible")
-	print("[PASS] Exactly 5 cards selected -> Live Preview calculated: %d pts, Play enabled!" % board.scoring_hud.current_score)
+	print("[PASS] 5 cards selected -> Live Preview calculated: %d pts, Play enabled!" % board.scoring_hud.current_score)
 	
 	# Test unselection
 	for i in range(5):
