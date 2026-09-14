@@ -2,6 +2,8 @@
 
 [ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
 [ext_resource type="Script" path="res://scripts/ui/main_menu.gd" id="2_menu"]
+[ext_resource type="Material" path="res://resources/shaders/balatro_background_material.tres" id="3_bg"]
+
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_menu_box"]
 content_margin_left = 32.0
@@ -50,6 +52,7 @@ theme = ExtResource("1_theme")
 script = ExtResource("2_menu")
 
 [node name="Background" type="ColorRect" parent="."]
+material = ExtResource("3_bg")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -57,6 +60,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.04, 0.04, 0.06, 1)
+
 
 [node name="Center" type="VBoxContainer" parent="."]
 layout_mode = 1

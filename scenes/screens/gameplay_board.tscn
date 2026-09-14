@@ -3,6 +3,8 @@
 [ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
 [ext_resource type="Script" path="res://scripts/ui/gameplay_board.gd" id="2_board"]
 [ext_resource type="PackedScene" path="res://scenes/components/scoring_hud.tscn" id="3_score"]
+[ext_resource type="Material" path="res://resources/shaders/balatro_background_material.tres" id="4_shader"]
+
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sidebar"]
 content_margin_left = 14.0
@@ -132,13 +134,15 @@ theme = ExtResource("1_theme")
 script = ExtResource("2_board")
 
 [node name="Background" type="ColorRect" parent="."]
+material = ExtResource("4_shader")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.035, 0.040, 0.065, 1)
+color = Color(0.035, 0.04, 0.065, 1)
+
 
 [node name="MainLayout" type="HBoxContainer" parent="."]
 layout_mode = 1

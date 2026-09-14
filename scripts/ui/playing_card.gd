@@ -286,7 +286,12 @@ func set_selected(val: bool) -> void:
 		return
 	is_selected = val
 	
+	var sm = get_node_or_null("/root/SoundManager")
+	if sm != null:
+		sm.play_card_click()
+	
 	# Select Punch Animation (Balatro feel)
+
 	punch_rot = 6.0 * (1.0 if randf() > 0.5 else -1.0)
 	var tw_punch: Tween = create_tween()
 	tw_punch.set_parallel(true)

@@ -1,0 +1,182 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Theme" path="res://resources/themes/balatro_anime_theme.tres" id="1_theme"]
+[ext_resource type="Script" path="res://scripts/ui/options.gd" id="2_options"]
+[ext_resource type="Material" path="res://resources/shaders/balatro_background_material.tres" id="3_bg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 32.0
+content_margin_top = 28.0
+content_margin_right = 32.0
+content_margin_bottom = 28.0
+bg_color = Color(0.08, 0.09, 0.14, 0.96)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.35, 0.5, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_danger_btn"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.65, 0.15, 0.15, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.9, 0.3, 0.3, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="OptionsScreen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_theme")
+script = ExtResource("2_options")
+
+[node name="Background" type="ColorRect" parent="."]
+material = ExtResource("3_bg")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.06, 1)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
+custom_minimum_size = Vector2(560, 540)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="Title" type="Label" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.25, 1)
+theme_override_font_sizes/font_size = 26
+text = "⚙ CÀI ĐẶT (OPTIONS)"
+horizontal_alignment = 1
+
+[node name="HSeparator1" type="HSeparator" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+
+[node name="AudioTitle" type="Label" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "ÂM THANH"
+
+[node name="MasterRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBox/MasterRow"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "Âm lượng tổng:"
+
+[node name="MasterSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBox/MasterRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 0.8
+
+[node name="SfxRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBox/SfxRow"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "Hiệu ứng SFX:"
+
+[node name="SfxSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBox/SfxRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 0.85
+
+[node name="MusicRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBox/MusicRow"]
+custom_minimum_size = Vector2(140, 0)
+layout_mode = 2
+text = "Nhạc nền BGM:"
+
+[node name="MusicSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBox/MusicRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+max_value = 1.0
+step = 0.05
+value = 0.7
+
+[node name="HSeparator2" type="HSeparator" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+
+[node name="VideoTitle" type="Label" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 16
+text = "HÌNH ẢNH & HIỆU ỨNG"
+
+[node name="FullscreenCheck" type="CheckBox" parent="CenterContainer/PanelContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Toàn màn hình (Fullscreen)"
+
+[node name="ShakeCheck" type="CheckBox" parent="CenterContainer/PanelContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Rung lắc màn hình (Screen Shake)"
+
+[node name="CrtCheck" type="CheckBox" parent="CenterContainer/PanelContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+button_pressed = true
+text = "Hiệu ứng CRT Swirl Background"
+
+[node name="Spacer" type="Control" parent="CenterContainer/PanelContainer/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ResetDataButton" type="Button" parent="CenterContainer/PanelContainer/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_danger_btn")
+text = "🗑 XÓA DỮ LIỆU SAVE & TIẾN TRÌNH"
+
+[node name="BackButton" type="Button" parent="CenterContainer/PanelContainer/VBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+text = "◀ QUAY LẠI MENU CHÍNH"

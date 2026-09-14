@@ -1,0 +1,13 @@
+[gd_resource type="ShaderMaterial" load_steps=2 format=3]
+
+[ext_resource type="Shader" path="res://resources/shaders/balatro_background.gdshader" id="1_shader"]
+
+[resource]
+shader = ExtResource("1_shader")
+shader_parameter/color_primary = Color(0.08, 0.04, 0.16, 1)
+shader_parameter/color_secondary = Color(0.22, 0.06, 0.1, 1)
+shader_parameter/color_tertiary = Color(0.04, 0.1, 0.18, 1)
+shader_parameter/swirl_speed = 0.65
+shader_parameter/swirl_scale = 5.5
+shader_parameter/scanline_strength = 0.12
+shader_parameter/vignette_strength = 0.65

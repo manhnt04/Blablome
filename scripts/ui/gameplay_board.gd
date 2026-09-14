@@ -64,6 +64,8 @@ const SLOT_PLACEHOLDER_SCENE = preload("res://scenes/components/card_slot_placeh
 var mock_jokers: Array[Dictionary] = []
 var shake_trauma: float = 0.0
 
+var run: RunStateMachine = null
+
 func _ready() -> void:
 	play_button.pressed.connect(_on_play_hand_pressed)
 	discard_button.pressed.connect(_on_discard_pressed)
@@ -73,55 +75,92 @@ func _ready() -> void:
 	%PauseButton.pressed.connect(func(): pause_requested.emit())
 	
 	victory_modal.visible = false
+	
+	var gm = get_node_or_null("/root/GameManager")
+	if gm != null and gm.current_run != null:
+		run = gm.current_run
+	else:
+		run = RunStateMachine.new()
+		run.start_new_run("red")
+		
 	_apply_deck_settings()
 	_setup_current_blind()
 	_build_deck()
-	_init_mock_jokers()
+	_init_jokers()
 	_update_hud()
 	_deal_initial_hand()
 
 func _apply_deck_settings() -> void:
-	var init_state = {
-		"hands_max": 4,
-		"discards_max": 3,
-		"money": 4,
-		"hand_size": 8
-	}
-	var modded = DeckManager.apply_deck_to_state(active_deck_id, init_state)
-	hands_max = modded["hands_max"]
-	hands_left = hands_max
-	discards_max = modded["discards_max"]
-	discards_left = discards_max
-	money = modded["money"]
-	is_green_deck = modded["is_green_deck"]
+	if run != null:
+		hands_max = run.hands_max
+		hands_left = run.hands_left
+		discards_max = run.discards_max
+		discards_left = run.discards_left
+		money = run.money
+		is_green_deck = run.is_green_deck
+		active_deck_id = run.deck_id
+	else:
+		var init_state = {
+			"hands_max": 4,
+			"discards_max": 3,
+			"money": 4,
+			"hand_size": 8
+		}
+		var modded = DeckManager.apply_deck_to_state(active_deck_id, init_state)
+		hands_max = modded["hands_max"]
+		hands_left = hands_max
+		discards_max = modded["discards_max"]
+		discards_left = discards_max
+		money = modded["money"]
+		is_green_deck = modded["is_green_deck"]
 
 func _setup_current_blind() -> void:
-	is_boss_blind = (blind_type == BlindSystem.BlindType.BOSS)
-	if is_boss_blind:
-		active_boss_data = BossEngine.get_random_boss(ante_current)
-		active_boss_id = active_boss_data.get("id", "the_club")
-		blind_name = "Boss: " + active_boss_data.get("name", "Boss Blind")
-	elif blind_type == BlindSystem.BlindType.BIG:
-		blind_name = "Big Blind"
-		active_boss_id = ""
-		active_boss_data = {}
+	if run != null:
+		ante_current = run.ante_current
+		ante_max = run.ante_max
+		blind_type = int(run.blind_type)
+		is_boss_blind = (run.blind_type == RunStateMachine.BlindType.BOSS)
+		active_boss_id = run.active_boss_id
+		active_boss_data = run.active_boss_data
+		if is_boss_blind:
+			blind_name = "Boss: " + active_boss_data.get("name", "Boss Blind")
+		elif blind_type == BlindSystem.BlindType.BIG:
+			blind_name = "Big Blind"
+		else:
+			blind_name = "Small Blind"
+		target_score = run.target_score
+		current_score = run.current_score
+		hands_left = run.hands_left
+		discards_left = run.discards_left
+		played_hands_this_round.clear()
 	else:
-		blind_name = "Small Blind"
-		active_boss_id = ""
-		active_boss_data = {}
+		is_boss_blind = (blind_type == BlindSystem.BlindType.BOSS)
+		if is_boss_blind:
+			active_boss_data = BossEngine.get_random_boss(ante_current)
+			active_boss_id = active_boss_data.get("id", "the_club")
+			blind_name = "Boss: " + active_boss_data.get("name", "Boss Blind")
+		elif blind_type == BlindSystem.BlindType.BIG:
+			blind_name = "Big Blind"
+			active_boss_id = ""
+			active_boss_data = {}
+		else:
+			blind_name = "Small Blind"
+			active_boss_id = ""
+			active_boss_data = {}
+			
+		target_score = BlindSystem.get_blind_target_score(ante_current, blind_type, active_boss_id)
+		current_score = 0
+		hands_left = hands_max
+		discards_left = discards_max
+		played_hands_this_round.clear()
 		
-	target_score = BlindSystem.get_blind_target_score(ante_current, blind_type, active_boss_id)
-	current_score = 0
-	hands_left = hands_max
-	discards_left = discards_max
-	played_hands_this_round.clear()
-	
-	# Apply boss round-start modifiers
-	if is_boss_blind:
-		if active_boss_id == "the_water":
-			discards_left = 0
-		elif active_boss_id == "the_needle":
-			hands_left = 1
+		# Apply boss round-start modifiers
+		if is_boss_blind:
+			if active_boss_id == "the_water":
+				discards_left = 0
+			elif active_boss_id == "the_needle":
+				hands_left = 1
+
 
 func _process(delta: float) -> void:
 	# Balatro Trauma-based Screen/Board Shake
@@ -155,35 +194,81 @@ func _build_deck() -> void:
 			deck.append({"rank": r, "suit": s, "enhancement": enh})
 	deck.shuffle()
 
-func _init_mock_jokers() -> void:
+func _init_jokers() -> void:
 	for child in joker_container.get_children():
 		child.queue_free()
 		
-	mock_jokers = [
-		{"name": "Tiêu Viêm", "icon": "🔥", "rarity": GameConstants.Rarity.UNCOMMON, "stat": "+4 Mult", "desc": "Mỗi lá Hỏa tính điểm cho +4 Mult."},
-		{"name": "Ainz", "icon": "🌑", "rarity": GameConstants.Rarity.RARE, "stat": "x1.5 Mult", "desc": "Nếu bài có lá Ám: x1.5 Mult tổng."},
-		{"name": "Saitama", "icon": "👊", "rarity": GameConstants.Rarity.LEGENDARY, "stat": "x3 Mult", "desc": "Nếu chỉ đánh đúng 1 lá duy nhất: x3 Mult."},
-		{"name": "Levi", "icon": "⚔️", "rarity": GameConstants.Rarity.UNCOMMON, "stat": "+30 Chips", "desc": "+30 Chips cho mỗi lá Phong."},
-		{"name": "Goku", "icon": "📈", "rarity": GameConstants.Rarity.RARE, "stat": "+10 Mult", "desc": "+10 Mult cố định."}
-	]
-	
-	for j_data in mock_jokers:
+	var active_jokers: Array = run.jokers if run != null and not run.jokers.is_empty() else mock_jokers
+	if active_jokers.is_empty():
+		mock_jokers = [
+			{"name": "Tiêu Viêm", "icon": "🔥", "rarity": GameConstants.Rarity.UNCOMMON, "stat": "+4 Mult", "desc": "Mỗi lá Hỏa tính điểm cho +4 Mult."},
+			{"name": "Ainz", "icon": "🌑", "rarity": GameConstants.Rarity.RARE, "stat": "x1.5 Mult", "desc": "Nếu bài có lá Ám: x1.5 Mult tổng."},
+			{"name": "Saitama", "icon": "👊", "rarity": GameConstants.Rarity.LEGENDARY, "stat": "x3 Mult", "desc": "Nếu chỉ đánh đúng 1 lá duy nhất: x3 Mult."}
+		]
+		active_jokers = mock_jokers
+		if run != null:
+			run.jokers = active_jokers.duplicate(true)
+			
+	for j_data in active_jokers:
 		var j_node = JOKER_SCENE.instantiate()
 		joker_container.add_child(j_node)
-		j_node.setup(j_data["name"], j_data["icon"], j_data["rarity"], j_data["stat"], j_data["desc"])
+		var j_name = j_data.get("name", "Joker")
+		var j_icon = j_data.get("icon", "🃏")
+		var j_rarity = j_data.get("rarity", "common")
+		var rarity_enum = GameConstants.Rarity.COMMON
+		if j_rarity is String:
+			match j_rarity.to_lower():
+				"uncommon": rarity_enum = GameConstants.Rarity.UNCOMMON
+				"rare": rarity_enum = GameConstants.Rarity.RARE
+				"legendary": rarity_enum = GameConstants.Rarity.LEGENDARY
+		elif j_rarity is int:
+			rarity_enum = j_rarity
+		var j_stat = j_data.get("stat", "")
+		var j_desc = j_data.get("desc", j_data.get("description", ""))
+		j_node.setup(j_name, j_icon, rarity_enum, j_stat, j_desc)
 		
-	# Fill remaining Joker slots up to 5 with Balatro dashed placeholders
-	var empty_jokers: int = 5 - mock_jokers.size()
-	for i in range(empty_jokers):
+	# Fill remaining Joker slots up to max with Balatro dashed placeholders
+	var max_slots = run.joker_slots if run != null else 5
+	var empty_jokers: int = max_slots - active_jokers.size()
+	for i in range(maxi(0, empty_jokers)):
 		var p = SLOT_PLACEHOLDER_SCENE.instantiate()
 		joker_container.add_child(p)
 		
-	# Fill Consumable slots with placeholders
+	# Render Consumables
 	for child in consumable_container.get_children():
 		child.queue_free()
-	for i in range(2):
+	if run != null:
+		for idx in range(run.consumables.size()):
+			var c_data = run.consumables[idx]
+			var btn = Button.new()
+			btn.custom_minimum_size = Vector2(70, 95)
+			btn.text = "%s\n%s\n[DÙNG]" % [c_data.get("icon", "🔮"), c_data.get("name", "Card").split(" ")[-1]]
+			btn.tooltip_text = c_data.get("desc", "")
+			var c_idx = idx
+			btn.pressed.connect(func(): _use_consumable_clicked(c_idx))
+			consumable_container.add_child(btn)
+			
+	var cons_count = run.consumables.size() if run != null else 0
+	var max_cons = run.consumable_slots if run != null else 2
+	for i in range(maxi(0, max_cons - cons_count)):
 		var p = SLOT_PLACEHOLDER_SCENE.instantiate()
 		consumable_container.add_child(p)
+
+func _use_consumable_clicked(c_idx: int) -> void:
+	if run == null or c_idx >= run.consumables.size():
+		return
+	var targets: Array = []
+	for sc in selected_cards:
+		targets.append({"rank": sc.rank, "suit": sc.suit, "enhancement": sc.enhancement})
+	var res = run.use_consumable(c_idx, targets)
+	if res.get("success", false):
+		scoring_trace_label.text = "🔮 " + res.get("feedback", "Đã kích hoạt!")
+		scoring_trace_label.modulate = Color(0.9, 0.7, 1.0)
+		trigger_screen_shake(0.2)
+		_init_jokers()
+		_update_hud()
+
+
 
 func _deal_initial_hand() -> void:
 	for c in hand_cards:
@@ -253,58 +338,20 @@ func _on_card_selection_changed(card, is_selected: bool) -> void:
 		
 	_evaluate_selected_cards()
 
-func _calculate_joker_contributions(scoring_cards: Array) -> Dictionary:
-	var bonus_chips: int = 0
-	var bonus_mult: float = 0.0
-	var bonus_xmult: float = 1.0
-	var triggers: Array[String] = []
-	
-	var has_dark: bool = false
-	var fire_count: int = 0
-	var wind_count: int = 0
-	
-	for c in scoring_cards:
-		if c.is_debuffed:
-			continue
-		if c.suit == GameConstants.Suit.DARK:
-			has_dark = true
-		elif c.suit == GameConstants.Suit.FIRE:
-			fire_count += 1
-		elif c.suit == GameConstants.Suit.WIND:
-			wind_count += 1
-			
-	# Tiêu Viêm: +4 Mult per Fire
-	if fire_count > 0:
-		var add_m: float = fire_count * 4.0
-		bonus_mult += add_m
-		triggers.append("🔥 Tiêu Viêm (+%d Mult)" % int(add_m))
-		
-	# Levi: +30 Chips per Wind
-	if wind_count > 0:
-		var add_c: int = wind_count * 30
-		bonus_chips += add_c
-		triggers.append("⚔️ Levi (+%d Chips)" % add_c)
-		
-	# Goku: +10 Mult
-	bonus_mult += 10.0
-	triggers.append("📈 Goku (+10 Mult)")
-	
-	# Ainz: x1.5 Mult if Dark
-	if has_dark:
-		bonus_xmult *= 1.5
-		triggers.append("🌑 Ainz (x1.5 Mult)")
-		
-	# Saitama: x3 Mult if exactly 1 card played
-	if scoring_cards.size() == 1:
-		bonus_xmult *= 3.0
-		triggers.append("👊 Saitama (x3 Mult)")
-		
-	return {
-		"bonus_chips": bonus_chips,
-		"bonus_mult": bonus_mult,
-		"bonus_xmult": bonus_xmult,
-		"triggers": triggers
+func _calculate_joker_contributions(scoring_cards: Array, hand_name: String = "") -> Dictionary:
+	var held_cards: Array = []
+	for c in hand_cards:
+		if not selected_cards.has(c):
+			held_cards.append(c)
+	var ctx = {
+		"hands_left": hands_left,
+		"discards_left": discards_left,
+		"money": money,
+		"held_cards": held_cards
 	}
+	var jokers_pool: Array = run.jokers if run != null and not run.jokers.is_empty() else mock_jokers
+	return JokerRuntime.calculate_hand_bonuses(jokers_pool, scoring_cards, hand_name, ctx)
+
 
 func _evaluate_selected_cards() -> void:
 	if selected_cards.is_empty():
@@ -318,7 +365,7 @@ func _evaluate_selected_cards() -> void:
 		return
 		
 	var eval: Dictionary = HandEvaluator.evaluate(selected_cards)
-	var j_bonus: Dictionary = _calculate_joker_contributions(eval["scoring_cards"])
+	var j_bonus: Dictionary = _calculate_joker_contributions(eval["scoring_cards"], eval["name"])
 	
 	var total_chips: int = eval["total_chips"] + j_bonus["bonus_chips"]
 	var total_mult: float = eval["mult"] + j_bonus["bonus_mult"]
@@ -360,7 +407,7 @@ func _on_play_hand_pressed() -> void:
 	played_hands_this_round.append(eval["name"])
 	for c in selected_cards:
 		played_cards_history.append({"rank": c.rank, "suit": c.suit})
-	var j_bonus: Dictionary = _calculate_joker_contributions(eval["scoring_cards"])
+	var j_bonus: Dictionary = _calculate_joker_contributions(eval["scoring_cards"], eval["name"])
 	
 	var final_chips: int = eval["total_chips"] + j_bonus["bonus_chips"]
 	var final_mult: float = eval["mult"] + j_bonus["bonus_mult"]
@@ -368,13 +415,28 @@ func _on_play_hand_pressed() -> void:
 	var scored_points: int = int(round(final_chips * final_mult * final_xmult))
 	
 	current_score += scored_points
+	if j_bonus.get("money_earned", 0) > 0:
+		money += j_bonus["money_earned"]
+		
+	if run != null:
+		run.current_score = current_score
+		run.hands_left = hands_left
+		run.money = money
 	
 	scoring_hud.update_display(eval["name"], 1, final_chips, final_mult, final_xmult, false)
 	scoring_hud.pop_score_animation()
 	
+	var sm = get_node_or_null("/root/SoundManager")
+	if sm != null:
+		sm.play_score_chip()
+		sm.play_mult_punch()
+		if j_bonus.get("money_earned", 0) > 0:
+			sm.play_cash_register()
+	
 	# Balatro Impact Screen Shake
 	var shake_force: float = 0.35 if scored_points < 800 else 0.75
 	trigger_screen_shake(shake_force)
+
 	
 	# Staggered Joker Pulses
 	for j_node in joker_container.get_children():
@@ -389,6 +451,7 @@ func _on_play_hand_pressed() -> void:
 	scoring_trace_label.modulate = Color(1.0, 0.85, 0.3)
 	
 	_update_hud()
+
 	
 	# Animate played cards to played area with rotation punch then discard
 	var cards_to_remove := selected_cards.duplicate()
@@ -416,6 +479,10 @@ func _on_discard_pressed() -> void:
 	if selected_cards.is_empty() or discards_left <= 0:
 		return
 		
+	var sm = get_node_or_null("/root/SoundManager")
+	if sm != null:
+		sm.play_card_deal()
+		
 	discards_left -= 1
 	trigger_screen_shake(0.25)
 	var count_to_replace: int = selected_cards.size()
@@ -428,6 +495,7 @@ func _on_discard_pressed() -> void:
 		
 	_draw_cards(count_to_replace)
 	_update_hud()
+
 
 func _on_sort_suit_pressed() -> void:
 	hand_cards.sort_custom(func(a, b):
@@ -481,7 +549,17 @@ func _check_round_end() -> void:
 func _show_victory() -> void:
 	victory_title.text = "🎉 CHIẾN THẮNG BLIND!"
 	victory_title.modulate = Color("#4dd97a")
+	var sm = get_node_or_null("/root/SoundManager")
+	if sm != null:
+		sm.play_victory()
+		sm.play_cash_register()
 	var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, money, hands_left, discards_left, is_green_deck)
+	if run != null:
+		run.current_score = current_score
+		run.hands_left = hands_left
+		run.discards_left = discards_left
+		run.stage = RunStateMachine.Stage.POST_BLIND
+		run.last_cashout = payout
 	next_shop_btn.text = "TIẾP TỤC ĐẾN SHOP (+$%d: Cơ bản $%d, Tay thừa $%d, Lãi $%d)" % [
 		payout["total_earned"], payout["blind_reward"], payout["hands_bonus"], payout["interest_bonus"]
 	]
@@ -490,24 +568,30 @@ func _show_victory() -> void:
 func _show_defeat() -> void:
 	victory_title.text = "💀 THẤT BẠI — HẾT LƯỢT ĐÁNH!"
 	victory_title.modulate = Color("#ff4d4d")
+	var sm = get_node_or_null("/root/SoundManager")
+	if sm != null:
+		sm.play_defeat()
+	if run != null:
+		run.stage = RunStateMachine.Stage.GAME_OVER
 	next_shop_btn.text = "CHƠI LẠI RUN MỚI"
 	victory_modal.visible = true
 
+
 func _on_next_shop_pressed() -> void:
+	var gm = get_node_or_null("/root/GameManager")
 	if current_score >= target_score:
-		var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, money, hands_left, discards_left, is_green_deck)
-		money += payout["total_earned"]
-		
-		# Blind Progression
-		if blind_type == BlindSystem.BlindType.SMALL:
-			blind_type = BlindSystem.BlindType.BIG
-		elif blind_type == BlindSystem.BlindType.BIG:
-			blind_type = BlindSystem.BlindType.BOSS
-		elif blind_type == BlindSystem.BlindType.BOSS:
-			ante_current += 1
-			blind_type = BlindSystem.BlindType.SMALL
-			
+		if run != null:
+			run.cash_out()
+		else:
+			var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, money, hands_left, discards_left, is_green_deck)
+			money += payout["total_earned"]
 		run_to_shop_requested.emit()
-		get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
+		if gm != null:
+			gm.go_to_shop()
+		else:
+			get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
 	else:
-		get_tree().change_scene_to_file("res://scenes/screens/game_over.tscn")
+		if gm != null:
+			gm.go_to_game_over(false)
+		else:
+			get_tree().change_scene_to_file("res://scenes/screens/game_over.tscn")

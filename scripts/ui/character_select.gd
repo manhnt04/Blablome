@@ -140,4 +140,50 @@ func _select_character(idx: int) -> void:
 func _on_start_run_pressed() -> void:
 	var c = CHARACTERS[selected_index]
 	character_chosen.emit(c)
-	get_tree().change_scene_to_file("res://scenes/screens/blind_select.tscn")
+	var gm = get_node_or_null("/root/GameManager")
+	if gm != null:
+		var run = gm.start_new_run("red", c)
+		_apply_character_starter_bonuses(run, c)
+		gm.go_to_blind_select()
+	else:
+		get_tree().change_scene_to_file("res://scenes/screens/blind_select.tscn")
+
+func _apply_character_starter_bonuses(run: RunStateMachine, c: Dictionary) -> void:
+	var c_id = c.get("id", "")
+	match c_id:
+		"saitama":
+			var j = JokerDB.get_joker_by_id("saitama_01")
+			if not j.is_empty():
+				run.jokers.append(j)
+			else:
+				run.jokers.append({"id": "saitama_starter", "name": "Saitama", "icon": "👊", "cost": 4, "rarity": "rare", "desc": "Nếu chỉ đánh 1 lá duy nhất: x3 Mult."})
+		"tieu_viem":
+			var j = JokerDB.get_joker_by_id("tieu_viem_01")
+			if not j.is_empty():
+				run.jokers.append(j)
+			else:
+				run.jokers.append({"id": "tieu_viem_starter", "name": "Tiêu Viêm", "icon": "🔥", "cost": 4, "rarity": "uncommon", "desc": "+4 Mult cho mỗi lá Hỏa."})
+		"ainz":
+			var j = JokerDB.get_joker_by_id("ainz_01")
+			if not j.is_empty():
+				run.jokers.append(j)
+			else:
+				run.jokers.append({"id": "ainz_starter", "name": "Ainz Ooal Gown", "icon": "🌑", "cost": 6, "rarity": "rare", "desc": "x1.5 Mult nếu có lá Ám."})
+		"duong_tam":
+			run.discards_max += 1
+			run.discards_left += 1
+		"goku":
+			var j = JokerDB.get_joker_by_id("goku_01")
+			if not j.is_empty():
+				run.jokers.append(j)
+			else:
+				run.jokers.append({"id": "goku_starter", "name": "Goku", "icon": "📈", "cost": 4, "rarity": "rare", "desc": "+10 Mult cố định."})
+		"levi":
+			run.hands_max += 1
+			run.hands_left += 1
+			var j = JokerDB.get_joker_by_id("levi_01")
+			if not j.is_empty():
+				run.jokers.append(j)
+			else:
+				run.jokers.append({"id": "levi_starter", "name": "Levi", "icon": "⚔️", "cost": 4, "rarity": "uncommon", "desc": "+30 Chips cho mỗi lá Phong."})
+

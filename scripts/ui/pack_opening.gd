@@ -26,11 +26,35 @@ func _ready() -> void:
 	
 	_show_face_down()
 
+var pack_type: String = "buffoon"
+
 func _show_face_down() -> void:
 	is_revealed = false
 	flip_button.visible = true
 	skip_button.visible = true
-	pack_cards = JokerDB.get_random_jokers(3)
+	
+	var gm = get_node_or_null("/root/GameManager")
+	if gm != null:
+		pack_type = gm.selected_pack_type
+		
+	match pack_type:
+		"buffoon":
+			pack_title.text = "📦 BUFFOON PACK"
+			%SubTitle.text = "Chọn 1 Joker để nhận vào bộ sưu tập"
+		"arcana":
+			pack_title.text = "🔮 ARCANA PACK"
+			%SubTitle.text = "Chọn 1 lá Tarot để nhận vào túi đồ"
+		"celestial":
+			pack_title.text = "🪐 CELESTIAL PACK"
+			%SubTitle.text = "Chọn 1 lá Planet để nâng cấp Poker Hand"
+		"spectral":
+			pack_title.text = "👻 SPECTRAL PACK"
+			%SubTitle.text = "Chọn 1 lá Spectral ma thuật cao cấp"
+		"standard":
+			pack_title.text = "🃏 STANDARD PACK"
+			%SubTitle.text = "Chọn 1 lá bài đã cường hóa thêm vào bộ bài"
+			
+	pack_cards = ConsumableDB.get_booster_pack_options(pack_type)
 	
 	for i in range(3):
 		var box = card_boxes[i]
@@ -55,15 +79,42 @@ func _on_flip_pressed() -> void:
 			up_content.visible = true
 			up_content.get_node("%NameLabel" + str(idx + 1)).text = data.get("name", "")
 			up_content.get_node("%IconLabel" + str(idx + 1)).text = data.get("icon", "🃏")
-			up_content.get_node("%StatLabel" + str(idx + 1)).text = data.get("rarity", "Common").capitalize()
+			var tag_text = data.get("rarity", data.get("type", "Card")).capitalize()
+			if data.has("enhancement") and data["enhancement"] != "":
+				tag_text += " (" + data["enhancement"].capitalize() + ")"
+			up_content.get_node("%StatLabel" + str(idx + 1)).text = tag_text
 		)
 		tw.tween_property(box, "scale:x", 1.0, 0.15)
 
 func _pick_card(index: int) -> void:
+	var gm = get_node_or_null("/root/GameManager")
 	if index < pack_cards.size():
-		card_selected.emit(pack_cards[index])
-	get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
+		var chosen = pack_cards[index]
+		card_selected.emit(chosen)
+		if gm != null and gm.current_run != null:
+			var run = gm.current_run
+			if pack_type == "buffoon":
+				if run.jokers.size() < run.joker_slots:
+					run.jokers.append(chosen)
+			elif pack_type in ["arcana", "spectral"]:
+				if run.consumables.size() < run.consumable_slots:
+					run.consumables.append(chosen)
+			elif pack_type == "celestial":
+				ConsumableDB.execute_consumable(chosen, run)
+			elif pack_type == "standard":
+				run.deck.append(chosen)
+				
+	if gm != null:
+		gm.go_to_shop()
+	else:
+		get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
+
 
 func _on_skip_pressed() -> void:
 	pack_skipped.emit()
-	get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
+	var gm = get_node_or_null("/root/GameManager")
+	if gm != null:
+		gm.go_to_shop()
+	else:
+		get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
+

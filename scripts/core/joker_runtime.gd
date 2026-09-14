@@ -1,206 +1,269 @@
 class_name JokerRuntime
 extends RefCounted
 
-## Joker Effect Engine — Evaluates Triggers, Conditions & Effects for all 45 Jokers
+## Dynamic Joker & Card Modifier Execution Engine
+## Evaluates 95 Jokers across Anime & Classic sets, Editions, Enhancements, and Seals.
 
-# History of sold jokers for Ohma Zi-O
-static var sold_joker_history: Array[Dictionary] = []
+static func calculate_hand_bonuses(jokers: Array, scoring_cards: Array, hand_name: String, context: Dictionary = {}) -> Dictionary:
+	var bonus_chips: int = 0
+	var bonus_mult: float = 0.0
+	var bonus_xmult: float = 1.0
+	var triggers: Array[String] = []
+	var money_earned: int = 0
+	var cards_destroyed: Array = []
 
-# Guard against infinite recursion when jokers copy each other (e.g., A copies B, B copies A)
-const MAX_COPY_DEPTH = 3
-
-static func record_joker_sold(joker_data: Dictionary) -> void:
-	sold_joker_history.push_front(joker_data.duplicate(true))
-	if sold_joker_history.size() > 10:
-		sold_joker_history.pop_back()
-
-static func evaluate_trigger(trigger_name: String, active_jokers: Array, context: Dictionary) -> Dictionary:
-	var result = {
-		"chips_added": 0,
-		"mult_added": 0,
-		"xmult_mult": 1.0,
-		"retrigger_count": 0,
-		"money_gained": 0,
-		"hand_size_bonus": 0,
-		"transformed_cards": []
+	var first_suit: int = scoring_cards[0].suit if not scoring_cards.is_empty() else 0
+	var full_context: Dictionary = {
+		"hand_name": hand_name.to_lower(),
+		"scoring_cards": scoring_cards,
+		"first_suit": first_suit,
+		"hands_left": context.get("hands_left", 3),
+		"discards_left": context.get("discards_left", 2),
+		"money": context.get("money", 4),
+		"held_cards": context.get("held_cards", [])
 	}
-	
-	# Pre-compute contextual helper variables
-	if context.has("played_cards") and context["played_cards"].size() > 0:
-		var first_card = context["played_cards"][0]
-		context["$first_played_card_suit"] = _suit_to_string(first_card.suit)
-	else:
-		context["$first_played_card_suit"] = ""
-		
-	for i in range(active_jokers.size()):
-		var joker = active_jokers[i]
-		_apply_single_joker(joker, i, active_jokers, trigger_name, context, result, 0)
-		
-	return result
 
-static func _apply_single_joker(joker: Dictionary, joker_idx: int, all_jokers: Array, trigger_name: String, context: Dictionary, result: Dictionary, depth: int) -> void:
-	if depth > MAX_COPY_DEPTH:
-		return # Prevent infinite recursion on circular copies
+	# 1. Process Card Enhancements, Editions, and Seals for SCORING CARDS
+	for c in scoring_cards:
+		var c_debuffed: bool = c.get("is_debuffed", false) if c is Dictionary else c.is_debuffed
+		if c_debuffed:
+			continue
+			
+		var c_enh: String = c.get("enhancement", "") if c is Dictionary else c.enhancement
+		var c_ed: String = c.get("edition", "") if c is Dictionary else c.get("edition") if "edition" in c else ""
+		var c_seal: String = c.get("seal", "") if c is Dictionary else c.get("seal") if "seal" in c else ""
 		
-	var triggers = joker.get("trigger", [])
-	if not (trigger_name in triggers) and not ("passive" in triggers):
-		return
-		
-	var cond: Dictionary = joker.get("condition", {"type": "always"})
-	if not _check_condition(cond, joker_idx, all_jokers, context):
-		return
-		
-	var effect: Dictionary = joker.get("effect", {})
-	_execute_effect(effect, joker, joker_idx, all_jokers, trigger_name, context, result, depth)
-	
-	# Handle scaling if present
-	var scaling = joker.get("scaling")
-	if scaling != null and scaling is Dictionary:
-		_apply_scaling(joker, scaling, context)
+		# Enhancement scoring effects
+		match c_enh:
+			"bonus":
+				bonus_chips += 30
+				triggers.append("💎 Bonus Card (+30 Chips)")
+			"mult":
+				bonus_mult += 4.0
+				triggers.append("🔴 Mult Card (+4 Mult)")
+			"stone":
+				bonus_chips += 50
+				triggers.append("🪨 Stone Card (+50 Chips)")
+			"glass":
+				bonus_xmult *= 2.0
+				triggers.append("🪟 Glass Card (x2.0 Mult)")
+				if randf() < 0.25:
+					cards_destroyed.append(c)
+					triggers.append("💥 Lá Thủy Tinh Vỡ Nát!")
+			"lucky":
+				if randf() < 0.2:
+					bonus_mult += 20.0
+					triggers.append("🍀 Lucky Card (+20 Mult!)")
+				if randf() < 0.066:
+					money_earned += 20
+					triggers.append("🍀 Lucky Card (+$20!)")
 
-static func _check_condition(cond: Dictionary, joker_idx: int, all_jokers: Array, context: Dictionary) -> bool:
-	var c_type: String = cond.get("type", "always")
-	match c_type:
+		# Card Edition effects
+		match c_ed:
+			"foil":
+				bonus_chips += 50
+				triggers.append("✨ Foil Card (+50 Chips)")
+			"holo":
+				bonus_mult += 10.0
+				triggers.append("🌈 Holographic Card (+10 Mult)")
+			"polychrome":
+				bonus_xmult *= 1.5
+				triggers.append("🔮 Polychrome Card (x1.5 Mult)")
+
+		# Seal effects
+		match c_seal:
+			"gold":
+				money_earned += 3
+				triggers.append("🟡 Gold Seal (+$3)")
+
+	# 2. Process Held in Hand Enhancements (e.g. Steel Card: x1.5 Mult)
+	var held = full_context["held_cards"]
+	for c in held:
+		var c_debuffed: bool = c.get("is_debuffed", false) if c is Dictionary else c.is_debuffed
+		if c_debuffed:
+			continue
+		var c_enh: String = c.get("enhancement", "") if c is Dictionary else c.enhancement
+		if c_enh == "steel":
+			bonus_xmult *= 1.5
+			triggers.append("🛡️ Steel Card Held (x1.5 Mult)")
+
+	# 3. Process each Joker
+	for j in jokers:
+		var j_res: Dictionary = evaluate_joker(j, full_context)
+		bonus_chips += j_res.get("bonus_chips", 0)
+		bonus_mult += j_res.get("bonus_mult", 0.0)
+		bonus_xmult *= j_res.get("bonus_xmult", 1.0)
+		money_earned += j_res.get("money_earned", 0)
+		
+		var j_name: String = j.get("name", "Joker")
+		var tr_list: Array = j_res.get("triggers", [])
+		for tr in tr_list:
+			triggers.append("%s: %s" % [j_name, tr])
+
+		# Check Joker Edition
+		var j_ed: String = j.get("edition", "")
+		match j_ed:
+			"foil":
+				bonus_chips += 50
+				triggers.append("%s (Foil): +50 Chips" % j_name)
+			"holo":
+				bonus_mult += 10.0
+				triggers.append("%s (Holo): +10 Mult" % j_name)
+			"polychrome":
+				bonus_xmult *= 1.5
+				triggers.append("%s (Polychrome): x1.5 Mult" % j_name)
+
+	return {
+		"bonus_chips": bonus_chips,
+		"bonus_mult": bonus_mult,
+		"bonus_xmult": bonus_xmult,
+		"money_earned": money_earned,
+		"triggers": triggers,
+		"cards_destroyed": cards_destroyed
+	}
+
+static func evaluate_joker(joker: Dictionary, ctx: Dictionary) -> Dictionary:
+	var chips: int = 0
+	var mult: float = 0.0
+	var xmult: float = 1.0
+	var money: int = 0
+	var triggers: Array[String] = []
+
+	var j_id: String = joker.get("joker_id", joker.get("id", ""))
+	var j_name: String = joker.get("name", "")
+	var scoring: Array = ctx.get("scoring_cards", [])
+	var hand_name: String = ctx.get("hand_name", "")
+
+	# Fast-path for iconic Anime archetypes
+	if j_id.begins_with("saitama") or j_name.contains("Saitama"):
+		if scoring.size() == 1:
+			xmult *= 3.0
+			triggers.append("Đánh 1 lá duy nhất -> x3 Mult!")
+		return {"bonus_chips": chips, "bonus_mult": mult, "bonus_xmult": xmult, "money_earned": money, "triggers": triggers}
+		
+	if j_id.begins_with("tieu_viem") or j_name.contains("Tiêu Viêm"):
+		var f_count: int = _count_suit(scoring, 0)
+		if f_count > 0:
+			mult += f_count * 4.0
+			triggers.append("%d lá Hỏa -> +%d Mult" % [f_count, f_count * 4])
+		return {"bonus_chips": chips, "bonus_mult": mult, "bonus_xmult": xmult, "money_earned": money, "triggers": triggers}
+
+	if j_id.begins_with("ainz") or j_name.contains("Ainz"):
+		var d_count: int = _count_suit(scoring, 3)
+		if d_count > 0:
+			xmult *= 1.5
+			triggers.append("Có lá Ám -> x1.5 Mult")
+		return {"bonus_chips": chips, "bonus_mult": mult, "bonus_xmult": xmult, "money_earned": money, "triggers": triggers}
+
+	if j_id.begins_with("goku") or j_name.contains("Goku"):
+		mult += 10.0
+		triggers.append("+10 Mult cơ bản")
+		return {"bonus_chips": chips, "bonus_mult": mult, "bonus_xmult": xmult, "money_earned": money, "triggers": triggers}
+
+	if j_id.begins_with("levi") or j_name.contains("Levi"):
+		var w_count: int = _count_suit(scoring, 2)
+		if w_count > 0:
+			chips += w_count * 30
+			triggers.append("%d lá Phong -> +%d Chips" % [w_count, w_count * 30])
+		return {"bonus_chips": chips, "bonus_mult": mult, "bonus_xmult": xmult, "money_earned": money, "triggers": triggers}
+
+	# Schema-driven evaluation
+	var cond = joker.get("condition", "always")
+	var eff = joker.get("effect", {})
+	var cond_type: String = ""
+	var cond_val = null
+	
+	if cond is Dictionary:
+		cond_type = cond.get("type", "")
+		cond_val = cond.get("value", null)
+	elif cond is String:
+		cond_type = cond
+
+	var eff_type: String = ""
+	var eff_val: float = 0.0
+	var eff_target: String = "flat"
+	if eff is Dictionary:
+		eff_type = eff.get("type", "")
+		eff_val = float(eff.get("value", joker.get("value", 0)))
+		eff_target = eff.get("target", "flat")
+	elif eff is String:
+		eff_type = eff
+		eff_val = float(joker.get("value", 0))
+
+	# Check Condition
+	var is_met: bool = false
+	var matching_count: int = 0
+
+	match cond_type:
 		"always":
-			return true
+			is_met = true
+			matching_count = 1
 		"card_suit_equals":
-			var expected = cond.get("value", "")
-			if expected == "$first_played_card_suit":
-				expected = context.get("$first_played_card_suit", "")
-			var card = context.get("scoring_card")
-			if card != null:
-				return _suit_to_string(card.suit) == expected
-			return false
-		"card_rank_in":
-			var ranks = cond.get("values", [])
-			var card = context.get("scoring_card")
-			if card != null:
-				return card.rank in ranks
-			return false
+			var target_suit: int = 0
+			if cond_val == "$first_played_card_suit":
+				target_suit = ctx.get("first_suit", 0)
+			elif cond_val != null:
+				target_suit = int(cond_val)
+			else:
+				var c_args = joker.get("condition_args", {})
+				target_suit = int(c_args.get("suit", 0))
+			matching_count = _count_suit(scoring, target_suit)
+			is_met = (matching_count > 0)
 		"hand_type_equals":
-			var expected_ht = cond.get("value", "")
-			var cur_ht = context.get("hand_type_str", "").to_lower()
-			return cur_ht == expected_ht.to_lower()
-		"is_flush":
-			return context.get("is_flush", false)
+			var req_hand = str(cond_val).to_lower()
+			is_met = hand_name.contains(req_hand)
+			matching_count = 1 if is_met else 0
+		"hand_size_lte":
+			var max_cards = int(cond_val) if cond_val != null else 3
+			is_met = (scoring.size() <= max_cards)
+			matching_count = 1 if is_met else 0
 		"cards_played_equals":
-			var played = context.get("played_cards", [])
-			return played.size() == cond.get("value", 0)
-		"face_count_gte":
-			var played = context.get("played_cards", [])
-			var face_count = 0
-			for c in played:
-				if c.rank in [11, 12, 13]:
-					face_count += 1
-			return face_count >= cond.get("value", 0)
-		"cards_held_gte":
-			var held = context.get("held_cards", [])
-			return held.size() >= cond.get("value", 0)
+			var req_count = int(cond_val) if cond_val != null else 5
+			is_met = (scoring.size() == req_count)
+			matching_count = 1 if is_met else 0
 		"money_gte":
-			return context.get("money", 0) >= cond.get("value", 0)
-		"has_joker_right":
-			return joker_idx < all_jokers.size() - 1
-		"has_joker_left_and_right":
-			return joker_idx > 0 and joker_idx < all_jokers.size() - 1
-		"any_card_retriggered":
-			return context.get("any_retriggered", false)
-	return true
+			var req_money = int(cond_val) if cond_val != null else 10
+			is_met = (ctx.get("money", 0) >= req_money)
+			matching_count = 1 if is_met else 0
+		_:
+			is_met = true
+			matching_count = 1
 
-static func _execute_effect(effect: Dictionary, joker: Dictionary, joker_idx: int, all_jokers: Array, trigger_name: String, context: Dictionary, result: Dictionary, depth: int) -> void:
-	var e_type: String = effect.get("type", "")
-	var target: String = effect.get("target", "flat")
-	
-	match e_type:
-		"add_chips":
-			var val = effect.get("value", 0)
-			if target == "per_5_money":
-				var m = context.get("money", 0)
-				result["chips_added"] += (m / 5) * val
-			else:
-				result["chips_added"] += val
-				
-		"add_mult":
-			var val = effect.get("value", 0)
-			# Add permanent scaled stats if recorded
-			val += joker.get("_scaled_mult", 0)
-			if target == "per_held_card":
-				var held = context.get("held_cards", [])
-				result["mult_added"] += held.size() * val
-			else:
-				result["mult_added"] += val
-				
-		"add_xmult":
-			var xval = effect.get("value", 1.0)
-			xval += joker.get("_scaled_xmult", 0.0)
-			if effect.has("per_money"):
-				var m = context.get("money", 0)
-				var cap = effect.get("max_xmult", 2.0)
-				xval = minf(1.0 + (m * 0.01), cap)
-			result["xmult_mult"] *= xval
-			
-		"retrigger":
-			var count = effect.get("value", 1)
-			result["retrigger_count"] += count
-			
-		"conditional":
-			if effect.has("if_true") and context.get("is_flush", false):
-				_execute_effect(effect["if_true"], joker, joker_idx, all_jokers, trigger_name, context, result, depth)
-			elif effect.has("if_false"):
-				_execute_effect(effect["if_false"], joker, joker_idx, all_jokers, trigger_name, context, result, depth)
-			elif effect.has("if_face_count_gte_5") or effect.has("if_face_count_gte_3"):
-				var played = context.get("played_cards", [])
-				var faces = 0
-				for c in played:
-					if c.rank in [11, 12, 13]: faces += 1
-				if faces >= 5 and effect.has("if_face_count_gte_5"):
-					_execute_effect(effect["if_face_count_gte_5"], joker, joker_idx, all_jokers, trigger_name, context, result, depth)
-				elif faces >= 3 and effect.has("if_face_count_gte_3"):
-					_execute_effect(effect["if_face_count_gte_3"], joker, joker_idx, all_jokers, trigger_name, context, result, depth)
-					
-		"copy_joker":
-			var source = effect.get("source", "")
-			if source == "right_slot" and joker_idx < all_jokers.size() - 1:
-				var target_joker = all_jokers[joker_idx + 1]
-				_apply_single_joker(target_joker, joker_idx + 1, all_jokers, trigger_name, context, result, depth + 1)
-			elif source is Array:
-				if "left_slot" in source and joker_idx > 0:
-					_apply_single_joker(all_jokers[joker_idx - 1], joker_idx - 1, all_jokers, trigger_name, context, result, depth + 1)
-				if "right_slot" in source and joker_idx < all_jokers.size() - 1:
-					_apply_single_joker(all_jokers[joker_idx + 1], joker_idx + 1, all_jokers, trigger_name, context, result, depth + 1)
-					
-		"store_effect":
-			# Ohma Zi-O: on boss start replay up to 3 most recently sold jokers
-			if trigger_name == "on_boss_start":
-				var replay_limit = mini(3, sold_joker_history.size())
-				for s_idx in range(replay_limit):
-					var s_joker = sold_joker_history[s_idx]
-					_apply_single_joker(s_joker, -1, all_jokers, trigger_name, context, result, depth + 1)
-					
-		"add_hand_size":
-			result["hand_size_bonus"] += effect.get("value", 1)
-			
-		"gain_money":
-			if effect.get("value") == "duplicate":
-				if randf() <= effect.get("chance", 0.333):
-					result["money_gained"] += context.get("recent_money_earned", 0)
+	if is_met:
+		var multiplier: int = matching_count if eff_target == "per_matching_card" else 1
+		match eff_type:
+			"add_chips":
+				var add_c = int(eff_val) * multiplier
+				chips += add_c
+				triggers.append("+%d Chips" % add_c)
+			"add_mult":
+				var add_m = eff_val * multiplier
+				mult += add_m
+				triggers.append("+%.0f Mult" % add_m)
+			"add_xmult":
+				xmult *= eff_val
+				triggers.append("x%.1f Mult" % eff_val)
+			"gain_money":
+				var add_mon = int(eff_val) * multiplier
+				money += add_mon
+				triggers.append("+$%d" % add_mon)
 
-static func _apply_scaling(joker: Dictionary, scaling: Dictionary, context: Dictionary) -> void:
-	var stat: String = scaling.get("stat", "mult")
-	var gain = scaling.get("gain_per_trigger", 0)
-	
-	if scaling.has("per_money"):
-		var m = context.get("money", 0)
-		gain = (m / scaling["per_money"]) * gain
-		
-	if stat == "mult":
-		joker["_scaled_mult"] = joker.get("_scaled_mult", 0) + int(gain)
-	elif stat == "xmult":
-		joker["_scaled_xmult"] = joker.get("_scaled_xmult", 0.0) + float(gain)
+	return {
+		"bonus_chips": chips,
+		"bonus_mult": mult,
+		"bonus_xmult": xmult,
+		"money_earned": money,
+		"triggers": triggers
+	}
 
-static func _suit_to_string(suit_val: int) -> String:
-	match suit_val:
-		0: return "hoa"
-		1: return "loi"
-		2: return "phong"
-		3: return "am"
-	return "hoa"
+static func _count_suit(cards: Array, suit_idx: int) -> int:
+	var cnt: int = 0
+	for c in cards:
+		var c_debuffed: bool = c.get("is_debuffed", false) if c is Dictionary else c.is_debuffed
+		if c_debuffed:
+			continue
+		var s: int = c.get("suit", 0) if c is Dictionary else c.suit
+		var enh: String = c.get("enhancement", "") if c is Dictionary else c.enhancement
+		if s == suit_idx or enh == "wild":
+			cnt += 1
+	return cnt

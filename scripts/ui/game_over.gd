@@ -16,15 +16,32 @@ var duration_str: String = "24 phút"
 @onready var main_menu_btn: Button = %MainMenuButton
 
 func _ready() -> void:
+	var gm = get_node_or_null("/root/GameManager")
+	if gm != null and gm.current_run != null:
+		var run = gm.current_run
+		is_victory = (run.stage == RunStateMachine.Stage.VICTORY)
+		ante_reached = run.ante_current
+		total_score = run.current_score
+		money_left = run.money
+
 	play_again_btn.pressed.connect(func():
 		restart_run_requested.emit()
-		get_tree().change_scene_to_file("res://scenes/screens/character_select.tscn")
+		var m_gm = get_node_or_null("/root/GameManager")
+		if m_gm != null:
+			m_gm.go_to_character_select()
+		else:
+			get_tree().change_scene_to_file("res://scenes/screens/character_select.tscn")
 	)
 	main_menu_btn.pressed.connect(func():
 		main_menu_requested.emit()
-		get_tree().change_scene_to_file("res://scenes/screens/main_menu.tscn")
+		var m_gm = get_node_or_null("/root/GameManager")
+		if m_gm != null:
+			m_gm.go_to_main_menu()
+		else:
+			get_tree().change_scene_to_file("res://scenes/screens/main_menu.tscn")
 	)
 	_update_visuals()
+
 
 func setup_stats(p_victory: bool, p_ante: int, p_score: int, p_money: int, p_time: String) -> void:
 	is_victory = p_victory

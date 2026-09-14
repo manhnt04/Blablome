@@ -348,6 +348,15 @@ func sell_joker(joker_idx: int) -> bool:
 	jokers.remove_at(joker_idx)
 	return true
 
+## Action: Use Consumable
+func use_consumable(idx: int, target_cards: Array = []) -> Dictionary:
+	if idx < 0 or idx >= consumables.size():
+		return {"success": false, "error": "Invalid consumable index"}
+	var card = consumables[idx]
+	consumables.remove_at(idx)
+	return ConsumableDB.execute_consumable(card, self, target_cards)
+
+
 ## Action: Proceed from Shop to Next Blind or Ante
 func next_round_from_shop() -> void:
 	if stage != Stage.SHOP:

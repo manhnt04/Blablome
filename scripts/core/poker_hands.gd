@@ -68,9 +68,12 @@ func reset_levels() -> void:
 		hand_levels[h_name] = 1
 		hand_play_counts[h_name] = 0
 
-func level_up(hand_name: String, amount: int = 1) -> void:
+func level_up(hand_name: String, amount: int = 1) -> int:
 	if HAND_DATA.has(hand_name):
 		hand_levels[hand_name] = hand_levels.get(hand_name, 1) + amount
+		return hand_levels[hand_name]
+	return 1
+
 
 func get_level(hand_name: String) -> int:
 	return hand_levels.get(hand_name, 1)
