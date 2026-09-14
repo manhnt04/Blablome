@@ -222,6 +222,47 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "MỞ: $4"
 
+[node name="VoucherSectionTitle" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 16
+text = "VOUCHER ANTE (HIỆU ỨNG VĨNH VIỄN - 1 LẦN/ANTE)"
+
+[node name="VoucherRow" type="HBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="ShopVoucherCard" type="PanelContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/VoucherRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 160)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_item_card")
+
+[node name="VBox" type="VBoxContainer" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/VoucherRow/ShopVoucherCard"]
+layout_mode = 2
+theme_override_constants/separation = 8
+alignment = 1
+
+[node name="VoucherName" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/VoucherRow/ShopVoucherCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "🏷️ Overstock"
+horizontal_alignment = 1
+
+[node name="VoucherDesc" type="Label" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/VoucherRow/ShopVoucherCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 12
+text = "+1 Ô chứa Joker trong Cửa hàng"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="BuyVoucherBtn" type="Button" parent="MainVBox/ItemsScroll/ItemsMargin/Sections/VoucherRow/ShopVoucherCard/VBox"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "MUA VOUCHER: $10"
+
 [node name="BottomActionBar" type="PanelContainer" parent="MainVBox"]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_shop_topbar")

@@ -31,6 +31,13 @@ static func save_run(run: RunStateMachine) -> bool:
 		"hand_size": run.hand_size,
 		"deck_id": run.deck_id,
 		"is_green_deck": run.is_green_deck,
+		"stake": int(run.stake),
+		"interest_cap": run.interest_cap,
+		"discount_percent": run.discount_percent,
+		"shop_joker_slots": run.shop_joker_slots,
+		"vouchers_redeemed": run.vouchers_redeemed,
+		"current_ante_voucher": run.current_ante_voucher,
+		"voucher_redeemed_this_ante": run.voucher_redeemed_this_ante,
 		"active_boss_id": run.active_boss_id,
 		"active_boss_data": run.active_boss_data,
 		"joker_slots": run.joker_slots,
@@ -83,6 +90,13 @@ static func load_run() -> RunStateMachine:
 	run.hand_size = data.get("hand_size", 8)
 	run.deck_id = data.get("deck_id", "red")
 	run.is_green_deck = data.get("is_green_deck", false)
+	run.stake = data.get("stake", RunStateMachine.Stake.WHITE)
+	run.interest_cap = data.get("interest_cap", 5)
+	run.discount_percent = data.get("discount_percent", 0)
+	run.shop_joker_slots = data.get("shop_joker_slots", 2)
+	run.vouchers_redeemed.assign(data.get("vouchers_redeemed", []))
+	run.current_ante_voucher = data.get("current_ante_voucher", {})
+	run.voucher_redeemed_this_ante = data.get("voucher_redeemed_this_ante", false)
 	run.active_boss_id = data.get("active_boss_id", "")
 	run.active_boss_data = data.get("active_boss_data", {})
 	run.joker_slots = data.get("joker_slots", 5)

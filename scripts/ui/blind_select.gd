@@ -31,19 +31,20 @@ func _refresh_display() -> void:
 	ante_label.text = "Ante %d/%d" % [ante, run.ante_max]
 	money_label.text = "🪙 $%d" % money
 
-	var small_target = BlindSystem.get_blind_target_score(ante, BlindSystem.BlindType.SMALL, "")
-	var big_target = BlindSystem.get_blind_target_score(ante, BlindSystem.BlindType.BIG, "")
+	var small_target = BlindSystem.get_blind_target_score(ante, BlindSystem.BlindType.SMALL, "", int(run.stake))
+	var big_target = BlindSystem.get_blind_target_score(ante, BlindSystem.BlindType.BIG, "", int(run.stake))
 	
 	var boss_data = run.active_boss_data
 	if boss_data.is_empty():
 		boss_data = BossEngine.get_random_boss(ante)
 		run.active_boss_data = boss_data
 		run.active_boss_id = boss_data.get("id", "the_club")
-	var boss_target = BlindSystem.get_blind_target_score(ante, BlindSystem.BlindType.BOSS, run.active_boss_id)
+	var boss_target = BlindSystem.get_blind_target_score(ante, BlindSystem.BlindType.BOSS, run.active_boss_id, int(run.stake))
 
 	# Update labels
 	get_node("MainVBox/CenterArea/SmallBlindCard/VBox/ScoreVal").text = str(small_target)
-	get_node("MainVBox/CenterArea/SmallBlindCard/VBox/Reward").text = "Thưởng: $3"
+	var small_reward = 0 if run.stake >= RunStateMachine.Stake.RED else 3
+	get_node("MainVBox/CenterArea/SmallBlindCard/VBox/Reward").text = "Thưởng: $%d" % small_reward
 	
 	get_node("MainVBox/CenterArea/BigBlindCard/VBox/ScoreVal").text = str(big_target)
 	get_node("MainVBox/CenterArea/BigBlindCard/VBox/Reward").text = "Thưởng: $4"

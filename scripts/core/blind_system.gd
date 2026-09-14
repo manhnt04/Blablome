@@ -11,6 +11,17 @@ enum BlindType {
 	BOSS
 }
 
+enum Stake {
+	WHITE,
+	RED,
+	GREEN,
+	BLACK,
+	BLUE,
+	PURPLE,
+	ORANGE,
+	GOLD
+}
+
 const BLIND_REWARDS: Dictionary = {
 	BlindType.SMALL: 3,
 	BlindType.BIG: 4,
@@ -27,7 +38,7 @@ static func get_base_ante_score(ante: int) -> int:
 	var clamped_ante: int = clampi(ante, 1, 8)
 	return ANTE_LUT[clamped_ante]
 
-static func get_blind_target_score(ante: int, blind_type: BlindType, boss_id: String = "") -> int:
+static func get_blind_target_score(ante: int, blind_type: BlindType, boss_id: String = "", stake: int = 0) -> int:
 	var base_score: int = get_base_ante_score(ante)
 	var mult: float = BLIND_MULTIPLIERS.get(blind_type, 1.0)
 	
@@ -38,13 +49,21 @@ static func get_blind_target_score(ante: int, blind_type: BlindType, boss_id: St
 		elif boss_id == "violet_vessel":
 			mult = 6.0 # Violet Vessel requires 6x base
 			
-	return int(round(base_score * mult))
+	var stake_mult: float = 1.0
+	if stake >= Stake.PURPLE:
+		stake_mult = 1.6
+	elif stake >= Stake.GREEN:
+		stake_mult = 1.3
+		
+	return int(round(base_score * mult * stake_mult))
 
 static func get_blind_reward(blind_type: BlindType) -> int:
 	return BLIND_REWARDS.get(blind_type, 3)
 
-static func calculate_cashout(blind_type: BlindType, current_money: int, remaining_hands: int, remaining_discards: int = 0, is_green_deck: bool = false, interest_cap: int = 5) -> Dictionary:
+static func calculate_cashout(blind_type: BlindType, current_money: int, remaining_hands: int, remaining_discards: int = 0, is_green_deck: bool = false, interest_cap: int = 5, stake: int = 0) -> Dictionary:
 	var base_reward: int = get_blind_reward(blind_type)
+	if stake >= Stake.RED and blind_type == BlindType.SMALL:
+		base_reward = 0 # Red Stake rule: Small Blind gives no reward
 	var hand_bonus: int = 0
 	var discard_bonus: int = 0
 	var interest_bonus: int = 0

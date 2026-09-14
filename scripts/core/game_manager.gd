@@ -20,10 +20,10 @@ func has_active_run() -> bool:
 		return true
 	return SaveManager.has_saved_run()
 
-func start_new_run(deck_id: String = "red", char_data: Dictionary = {}) -> RunStateMachine:
+func start_new_run(deck_id: String = "red", char_data: Dictionary = {}, p_stake: int = 0) -> RunStateMachine:
 	selected_character = char_data
 	current_run = RunStateMachine.new()
-	current_run.start_new_run(deck_id)
+	current_run.start_new_run(deck_id, 0, p_stake as RunStateMachine.Stake)
 	
 	# Apply character specific perks if any
 	if char_data.has("money"):

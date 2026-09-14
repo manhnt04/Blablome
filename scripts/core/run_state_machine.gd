@@ -19,6 +19,17 @@ enum BlindType {
 	BOSS
 }
 
+enum Stake {
+	WHITE,
+	RED,
+	GREEN,
+	BLACK,
+	BLUE,
+	PURPLE,
+	ORANGE,
+	GOLD
+}
+
 # Run Progress
 var stage: Stage = Stage.PRE_BLIND
 var ante_current: int = 1
@@ -27,6 +38,7 @@ var blind_type: BlindType = BlindType.SMALL
 var round_number: int = 1
 var deck_id: String = "red"
 var is_green_deck: bool = false
+var stake: Stake = Stake.WHITE
 
 # Round Scores & Goals
 var target_score: int = 300
@@ -37,6 +49,8 @@ var discards_left: int = 3
 var discards_max: int = 3
 var hand_size: int = 8
 var money: int = 4
+var interest_cap: int = 5
+var discount_percent: int = 0
 
 # Boss State
 var active_boss_id: String = ""
@@ -57,9 +71,15 @@ var joker_slots: int = 5
 var consumables: Array[Dictionary] = []
 var consumable_slots: int = 2
 
+# Voucher System (1 per Ante)
+var vouchers_redeemed: Array[String] = []
+var current_ante_voucher: Dictionary = {}
+var voucher_redeemed_this_ante: bool = false
+
 # Shop State
 var shop_shelf_jokers: Array = []
 var shop_shelf_consumables: Array = []
+var shop_joker_slots: int = 2
 var reroll_cost: int = 5
 var last_cashout: Dictionary = {}
 
@@ -70,7 +90,7 @@ var seed_value: int = 0
 func _init() -> void:
 	poker_hands = PokerHands.new()
 
-func start_new_run(p_deck_id: String = "red", p_seed: int = 0) -> void:
+func start_new_run(p_deck_id: String = "red", p_seed: int = 0, p_stake: Stake = Stake.WHITE) -> void:
 	deck_id = p_deck_id
 	ante_current = 1
 	round_number = 1
@@ -80,6 +100,13 @@ func start_new_run(p_deck_id: String = "red", p_seed: int = 0) -> void:
 	hand_size = 8
 	joker_slots = 5
 	consumable_slots = 2
+	interest_cap = 5
+	discount_percent = 0
+	shop_joker_slots = 2
+	stake = p_stake
+	vouchers_redeemed.clear()
+	current_ante_voucher.clear()
+	voucher_redeemed_this_ante = false
 	jokers.clear()
 	consumables.clear()
 	poker_hands.reset_levels()
@@ -102,8 +129,19 @@ func start_new_run(p_deck_id: String = "red", p_seed: int = 0) -> void:
 	hand_size = modded.get("hand_size", 8)
 	is_green_deck = modded.get("is_green_deck", false)
 	
+	# Apply Stake modifiers
+	if stake >= Stake.BLUE:
+		discards_max = maxi(1, discards_max - 1)
+	if stake >= Stake.GOLD:
+		hand_size = maxi(5, hand_size - 1)
+		
+	_spawn_ante_voucher()
 	_build_deck()
 	_setup_blind_type(BlindType.SMALL)
+
+func _spawn_ante_voucher() -> void:
+	voucher_redeemed_this_ante = false
+	current_ante_voucher = VoucherDB.get_random_voucher_for_ante(vouchers_redeemed, rng)
 
 func shuffle_array(arr: Array) -> void:
 	if rng != null:
@@ -138,7 +176,7 @@ func _setup_blind_type(b_type: BlindType) -> void:
 		active_boss_id = ""
 		active_boss_data = {}
 		
-	target_score = BlindSystem.get_blind_target_score(ante_current, int(blind_type), active_boss_id)
+	target_score = BlindSystem.get_blind_target_score(ante_current, int(blind_type), active_boss_id, int(stake))
 	current_score = 0
 	hands_left = hands_max
 	discards_left = discards_max
@@ -283,7 +321,7 @@ func play_hand() -> Dictionary:
 	# Check Win / Loss
 	if current_score >= target_score:
 		stage = Stage.POST_BLIND
-		last_cashout = BlindSystem.calculate_cashout(int(blind_type), money, hands_left, discards_left, is_green_deck)
+		last_cashout = BlindSystem.calculate_cashout(int(blind_type), money, hands_left, discards_left, is_green_deck, interest_cap, int(stake))
 	elif hands_left <= 0:
 		stage = Stage.GAME_OVER
 
@@ -332,8 +370,11 @@ func cash_out() -> Dictionary:
 	}
 
 func _refresh_shop() -> void:
-	shop_shelf_jokers = JokerDB.get_random_jokers(2)
-	reroll_cost = 5
+	shop_shelf_jokers = JokerDB.get_random_jokers(shop_joker_slots)
+	var base_reroll = 5
+	if stake >= Stake.ORANGE:
+		base_reroll += (ante_current - 1)
+	reroll_cost = base_reroll
 
 ## Action: Reroll shop
 func reroll_shop() -> bool:
@@ -341,7 +382,7 @@ func reroll_shop() -> bool:
 		return false
 	money -= reroll_cost
 	reroll_cost += 1
-	shop_shelf_jokers = JokerDB.get_random_jokers(2)
+	shop_shelf_jokers = JokerDB.get_random_jokers(shop_joker_slots)
 	return true
 
 ## Action: Buy Joker from shop
@@ -351,12 +392,28 @@ func buy_joker(shelf_idx: int) -> bool:
 	if jokers.size() >= joker_slots:
 		return false
 	var j = shop_shelf_jokers[shelf_idx]
-	var cost = j.get("cost", 4)
+	var base_cost = j.get("cost", 4)
+	var cost = maxi(1, int(round(base_cost * (100.0 - discount_percent) / 100.0)))
 	if money < cost:
 		return false
 	money -= cost
 	jokers.append(j)
 	shop_shelf_jokers.remove_at(shelf_idx)
+	return true
+
+## Action: Redeem Voucher from shop (1 per Ante)
+func redeem_current_voucher() -> bool:
+	if stage != Stage.SHOP or current_ante_voucher.is_empty() or voucher_redeemed_this_ante:
+		return false
+	var base_cost = current_ante_voucher.get("cost", 10)
+	var cost = maxi(1, int(round(base_cost * (100.0 - discount_percent) / 100.0)))
+	if money < cost:
+		return false
+	money -= cost
+	voucher_redeemed_this_ante = true
+	var v_id = current_ante_voucher.get("id", "")
+	vouchers_redeemed.append(v_id)
+	VoucherDB.apply_voucher(v_id, self)
 	return true
 
 ## Action: Sell Joker
@@ -393,6 +450,7 @@ func next_round_from_shop() -> void:
 		if ante_current > ante_max:
 			stage = Stage.VICTORY
 			return
+		_spawn_ante_voucher()
 		_setup_blind_type(BlindType.SMALL)
 
 ## Action: Reorder Jokers (trigger order matters for xMult)
@@ -423,11 +481,18 @@ func serialize_state() -> Dictionary:
 		"stage": stage,
 		"ante_current": ante_current,
 		"blind_type": blind_type,
+		"stake": stake,
 		"target_score": target_score,
 		"current_score": current_score,
 		"hands_left": hands_left,
 		"discards_left": discards_left,
 		"money": money,
+		"interest_cap": interest_cap,
+		"discount_percent": discount_percent,
+		"shop_joker_slots": shop_joker_slots,
+		"vouchers_redeemed": vouchers_redeemed,
+		"current_ante_voucher": current_ante_voucher,
+		"voucher_redeemed_this_ante": voucher_redeemed_this_ante,
 		"hand_size": hand_cards.size(),
 		"joker_count": jokers.size(),
 		"hand_cards": hand_cards,

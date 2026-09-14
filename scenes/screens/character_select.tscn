@@ -171,6 +171,36 @@ layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
 text = "Tiền: $4"
 
+[node name="StakeSelectionRow" type="HBoxContainer" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="StakePrevBtn" type="Button" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox/StakeSelectionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+text = "◀"
+
+[node name="StakeNameLabel" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox/StakeSelectionRow"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.9, 0.4, 1)
+theme_override_font_sizes/font_size = 15
+text = "ĐỘ KHÓ: CỌC TRẮNG (WHITE STAKE)"
+
+[node name="StakeNextBtn" type="Button" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox/StakeSelectionRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(36, 36)
+layout_mode = 2
+text = "▶"
+
+[node name="StakeDescLabel" type="Label" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.8, 0.9, 1)
+theme_override_font_sizes/font_size = 13
+text = "Quy tắc cơ bản tiêu chuẩn của Balatro."
+
 [node name="Spacer" type="Control" parent="MainVBox/PreviewSection/PreviewBox/HBox/DetailsVBox"]
 layout_mode = 2
 size_flags_vertical = 3

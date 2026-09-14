@@ -31,16 +31,10 @@ func _init() -> void:
 	print("[PASS] Blueprint verified.")
 	
 	# Test Runtime triggering Classic Joker
-	var runtime = JokerRuntime.new()
-	runtime.add_joker(classic_joker)
-	
-	var ctx = {
-		"game_state": {"round": 1},
-		"event_args": {}
-	}
-	var res = runtime.evaluate_event("on_hand_played", ctx)
-	assert(res["total_mult"] == 4, "Classic Joker must add 4 Mult on_hand_played")
-	print("[PASS] Classic Joker runtime evaluation verified: +%d Mult" % res["total_mult"])
+	var scoring_cards = [{"rank": 10, "suit": 0}, {"rank": 10, "suit": 1}]
+	var res = JokerRuntime.calculate_hand_bonuses([classic_joker], scoring_cards, "pair", {})
+	assert(res["bonus_mult"] == 4.0, "Classic Joker must add 4 Mult")
+	print("[PASS] Classic Joker runtime evaluation verified: +%d Mult" % res["bonus_mult"])
 	
 	print("ALL ORIGINAL BALATRO JOKERS TESTS PASSED 100%!")
 	quit(0)

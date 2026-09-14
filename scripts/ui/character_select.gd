@@ -83,7 +83,51 @@ const CHARACTERS = [
 	}
 ]
 
+const STAKES = [
+	{
+		"stake": 0,
+		"name": "⚪ CỌC TRẮNG (WHITE STAKE)",
+		"desc": "Quy tắc tiêu chuẩn cơ bản của Balatro."
+	},
+	{
+		"stake": 1,
+		"name": "🔴 CỌC ĐỎ (RED STAKE)",
+		"desc": "Small Blind không nhận được thưởng tiền cơ bản ($0)."
+	},
+	{
+		"stake": 2,
+		"name": "🟢 CỌC XANH LỤC (GREEN STAKE)",
+		"desc": "Điểm mục tiêu yêu cầu tăng nhanh hơn 30% mỗi Ante."
+	},
+	{
+		"stake": 3,
+		"name": "⚫ CỌC ĐEN (BLACK STAKE)",
+		"desc": "Cửa hàng có thể chứa Joker Vĩnh Cửu (Eternal)."
+	},
+	{
+		"stake": 4,
+		"name": "🔵 CỌC XANH DƯƠNG (BLUE STAKE)",
+		"desc": "Giảm 1 lượt bỏ bài tối đa mỗi ván (Discards -1)."
+	},
+	{
+		"stake": 5,
+		"name": "🟣 CỌC TÍM (PURPLE STAKE)",
+		"desc": "Điểm mục tiêu tăng tốc vượt bậc (+60% điểm yêu cầu)."
+	},
+	{
+		"stake": 6,
+		"name": "🟠 CỌC CAM (ORANGE STAKE)",
+		"desc": "Phí đổi cửa hàng Reroll tăng thêm +$1 mỗi Ante."
+	},
+	{
+		"stake": 7,
+		"name": "🟡 CỌC VÀNG (GOLD STAKE)",
+		"desc": "Giảm 1 kích thước tay cầm bài (Hand Size: 7 lá)."
+	}
+]
+
 var selected_index: int = 0
+var selected_stake_idx: int = 0
 
 @onready var grid_container: HBoxContainer = %CharGridContainer
 @onready var preview_icon: Label = %PreviewIcon
@@ -102,8 +146,28 @@ func _ready() -> void:
 	)
 	start_run_btn.pressed.connect(_on_start_run_pressed)
 	
+	if has_node("%StakePrevBtn"):
+		get_node("%StakePrevBtn").pressed.connect(_on_prev_stake)
+	if has_node("%StakeNextBtn"):
+		get_node("%StakeNextBtn").pressed.connect(_on_next_stake)
+		
 	_populate_characters()
 	_select_character(0)
+	_update_stake_display()
+
+func _on_prev_stake() -> void:
+	selected_stake_idx = (selected_stake_idx - 1 + STAKES.size()) % STAKES.size()
+	_update_stake_display()
+
+func _on_next_stake() -> void:
+	selected_stake_idx = (selected_stake_idx + 1) % STAKES.size()
+	_update_stake_display()
+
+func _update_stake_display() -> void:
+	if has_node("%StakeNameLabel"):
+		get_node("%StakeNameLabel").text = STAKES[selected_stake_idx]["name"]
+	if has_node("%StakeDescLabel"):
+		get_node("%StakeDescLabel").text = STAKES[selected_stake_idx]["desc"]
 
 func _populate_characters() -> void:
 	for child in grid_container.get_children():
@@ -142,7 +206,7 @@ func _on_start_run_pressed() -> void:
 	character_chosen.emit(c)
 	var gm = get_node_or_null("/root/GameManager")
 	if gm != null:
-		var run = gm.start_new_run("red", c)
+		var run = gm.start_new_run("red", c, selected_stake_idx)
 		_apply_character_starter_bonuses(run, c)
 		gm.go_to_blind_select()
 	else:
