@@ -21,6 +21,7 @@ enum ActionType {
 	SELL_CONSUMABLE,
 	REROLL_SHOP,
 	NEXT_ROUND,
+	REORDER_JOKER,
 	RESTART_RUN
 }
 
@@ -98,13 +99,13 @@ static func get_legal_actions(sm: RunStateMachine) -> Array[Dictionary]:
 				"desc": "Sắp xếp bài theo Số (Rank)"
 			})
 
-			# Play Hand action
-			if not sm.selected_indices.is_empty() and sm.hands_left > 0:
+			# Play Hand action (Requires exactly 5 cards)
+			if sm.selected_indices.size() == 5 and sm.hands_left > 0:
 				actions.append({
 					"type": ActionType.PLAY_HAND,
 					"name": "PLAY_HAND",
-					"count": sm.selected_indices.size(),
-					"desc": "Đánh bài (%d lá đã chọn)" % sm.selected_indices.size()
+					"count": 5,
+					"desc": "Đánh 5 lá bài đã chọn"
 				})
 
 			# Discard Hand action
@@ -115,6 +116,17 @@ static func get_legal_actions(sm: RunStateMachine) -> Array[Dictionary]:
 					"count": sm.selected_indices.size(),
 					"desc": "Bỏ bài (%d lá đã chọn)" % sm.selected_indices.size()
 				})
+
+			# Joker reordering actions (important for trigger order)
+			for j_idx in range(sm.jokers.size()):
+				if j_idx > 0:
+					actions.append({
+						"type": ActionType.REORDER_JOKER,
+						"name": "REORDER_JOKER_LEFT",
+						"from_index": j_idx,
+						"to_index": j_idx - 1,
+						"desc": "Đổi vị trí Joker sang trái"
+					})
 
 			# Joker selling actions
 			for j_idx in range(sm.jokers.size()):
@@ -227,6 +239,9 @@ static func execute_action(sm: RunStateMachine, action: Dictionary) -> Dictionar
 		ActionType.NEXT_ROUND:
 			sm.next_round_from_shop()
 			return {"success": true, "msg": "Moved to Next Round"}
+		ActionType.REORDER_JOKER:
+			var ok = sm.reorder_jokers(action.get("from_index", 0), action.get("to_index", 0))
+			return {"success": ok, "msg": "Reordered Joker"}
 		ActionType.RESTART_RUN:
 			sm.start_new_run()
 			return {"success": true, "msg": "Restarted Run"}

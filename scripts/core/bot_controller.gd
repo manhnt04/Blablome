@@ -36,16 +36,16 @@ static func choose_best_action(sm: RunStateMachine) -> Dictionary:
 			return legal[0]
 
 		RunStateMachine.Stage.BLIND:
-			# If cards already selected and matches best hand, play it
-			if not sm.selected_indices.is_empty():
+			# If exactly 5 cards selected and matches best hand, play it
+			if sm.selected_indices.size() == 5:
 				for a in legal:
 					if a["type"] == ActionGenerator.ActionType.PLAY_HAND:
 						return a
 			
-			# Find best hand combination
+			# Find best 5-card hand combination
 			var best_indices: Array = _find_best_hand_indices(sm)
 			
-			# If we have a good hand or no discards left, select cards for play
+			# Select cards for play
 			if not best_indices.is_empty():
 				# Deselect any currently selected card not in best_indices
 				for sel in sm.selected_indices:
@@ -55,12 +55,13 @@ static func choose_best_action(sm: RunStateMachine) -> Dictionary:
 				for idx in best_indices:
 					if not sm.selected_indices.has(idx):
 						return {"type": ActionGenerator.ActionType.SELECT_CARD, "card_index": idx}
-				# If all selected, play
-				for a in legal:
-					if a["type"] == ActionGenerator.ActionType.PLAY_HAND:
-						return a
+				# If all 5 selected, play
+				if sm.selected_indices.size() == 5:
+					for a in legal:
+						if a["type"] == ActionGenerator.ActionType.PLAY_HAND:
+							return a
 
-			# Fallback: discard the lowest 3-5 cards if discards remaining
+			# Fallback: discard the lowest 3 cards if discards remaining
 			if sm.discards_left > 0 and sm.hand_cards.size() >= 3:
 				var sorted_low: Array = _find_lowest_cards(sm, 3)
 				for idx in sorted_low:
@@ -70,7 +71,7 @@ static func choose_best_action(sm: RunStateMachine) -> Dictionary:
 					if a["type"] == ActionGenerator.ActionType.DISCARD_HAND:
 						return a
 
-			# Default: select first available card to play
+			# Default fallback
 			for a in legal:
 				if a["type"] == ActionGenerator.ActionType.SELECT_CARD:
 					return a
@@ -80,63 +81,33 @@ static func choose_best_action(sm: RunStateMachine) -> Dictionary:
 
 	return legal[0]
 
-## Finds optimal combination of up to 5 card indices maximizing score
-static func _find_best_hand_indices(sm: RunStateMachine) -> Array:
-	var cards = sm.hand_cards
-	if cards.is_empty():
-		return []
+## Finds optimal combination of 5 card indices maximizing score among all combinations
+static func find_best_5_cards(cards: Array, p_hands: PokerHands) -> Array:
+	var n = cards.size()
+	if n < 5:
+		var res: Array = []
+		for i in range(n): res.append(i)
+		return res
 
 	var best_score: int = -1
-	var best_combo: Array = []
+	var best_combo: Array = [0, 1, 2, 3, 4]
 
-	# Check single cards (High card)
-	for i in range(cards.size()):
-		var eval = sm.poker_hands.evaluate([cards[i]])
-		if eval["total_score"] > best_score:
-			best_score = eval["total_score"]
-			best_combo = [i]
-
-	# Check pairs & triples & 4 of a kind by rank groups
-	var rank_map: Dictionary = {}
-	for i in range(cards.size()):
-		var r = cards[i]["rank"]
-		if not rank_map.has(r): rank_map[r] = []
-		rank_map[r].append(i)
-
-	for r in rank_map.keys():
-		var group: Array = rank_map[r]
-		if group.size() >= 2:
-			var pair_cards: Array = []
-			for idx in group.slice(0, mini(5, group.size())):
-				pair_cards.append(cards[idx])
-			var eval = sm.poker_hands.evaluate(pair_cards)
-			if eval["total_score"] > best_score:
-				best_score = eval["total_score"]
-				best_combo = []
-				for idx in group.slice(0, mini(5, group.size())):
-					best_combo.append(idx)
-
-	# Check Flush (5 cards same suit)
-	var suit_map: Dictionary = {}
-	for i in range(cards.size()):
-		var s = cards[i]["suit"]
-		if not suit_map.has(s): suit_map[s] = []
-		suit_map[s].append(i)
-
-	for s in suit_map.keys():
-		var group: Array = suit_map[s]
-		if group.size() >= 5:
-			var flush_cards: Array = []
-			for idx in group.slice(0, 5):
-				flush_cards.append(cards[idx])
-			var eval = sm.poker_hands.evaluate(flush_cards)
-			if eval["total_score"] > best_score:
-				best_score = eval["total_score"]
-				best_combo = []
-				for idx in group.slice(0, 5):
-					best_combo.append(idx)
+	# Iterate all combinations of 5 cards (e.g. 56 combinations for n=8)
+	for i in range(n):
+		for j in range(i + 1, n):
+			for k in range(j + 1, n):
+				for l in range(k + 1, n):
+					for m in range(l + 1, n):
+						var five = [cards[i], cards[j], cards[k], cards[l], cards[m]]
+						var eval = p_hands.evaluate(five)
+						if eval["total_score"] > best_score:
+							best_score = eval["total_score"]
+							best_combo = [i, j, k, l, m]
 
 	return best_combo
+
+static func _find_best_hand_indices(sm: RunStateMachine) -> Array:
+	return find_best_5_cards(sm.hand_cards, sm.poker_hands)
 
 static func _find_lowest_cards(sm: RunStateMachine, count: int) -> Array:
 	var indexed: Array = []

@@ -52,6 +52,7 @@ var selected_cards: Array = []
 @onready var discard_button: Button = %DiscardButton
 @onready var sort_suit_btn: Button = %SortSuitButton
 @onready var sort_rank_btn: Button = %SortRankButton
+@onready var bot_assist_btn: Button = %BotAssistButton
 
 @onready var victory_modal: PanelContainer = %VictoryModal
 @onready var victory_title: Label = %VictoryTitle
@@ -88,6 +89,7 @@ func _ensure_nodes() -> void:
 	if discard_button == null: discard_button = %DiscardButton if has_node("%DiscardButton") else null
 	if sort_suit_btn == null: sort_suit_btn = %SortSuitButton if has_node("%SortSuitButton") else null
 	if sort_rank_btn == null: sort_rank_btn = %SortRankButton if has_node("%SortRankButton") else null
+	if bot_assist_btn == null: bot_assist_btn = %BotAssistButton if has_node("%BotAssistButton") else null
 	if victory_modal == null: victory_modal = %VictoryModal if has_node("%VictoryModal") else null
 	if victory_title == null: victory_title = %VictoryTitle if has_node("%VictoryTitle") else null
 	if next_shop_btn == null: next_shop_btn = %NextShopButton if has_node("%NextShopButton") else null
@@ -118,6 +120,8 @@ func _ready() -> void:
 		sort_suit_btn.pressed.connect(_on_sort_suit_pressed)
 	if sort_rank_btn != null and not sort_rank_btn.pressed.is_connected(_on_sort_rank_pressed):
 		sort_rank_btn.pressed.connect(_on_sort_rank_pressed)
+	if bot_assist_btn != null and not bot_assist_btn.pressed.is_connected(_on_bot_assist_pressed):
+		bot_assist_btn.pressed.connect(_on_bot_assist_pressed)
 	if next_shop_btn != null and not next_shop_btn.pressed.is_connected(_on_next_shop_pressed):
 		next_shop_btn.pressed.connect(_on_next_shop_pressed)
 	var pause_btn = %PauseButton if has_node("%PauseButton") else null
@@ -231,6 +235,30 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.keycode == KEY_D and event.pressed:
 		if not discard_button.disabled and not victory_modal.visible:
 			_on_discard_pressed()
+	elif event is InputEventKey and event.keycode == KEY_B and event.pressed:
+		if not victory_modal.visible:
+			_on_bot_assist_pressed()
+
+func _on_bot_assist_pressed() -> void:
+	if hand_cards.is_empty():
+		return
+	var p_hands: PokerHands = run.poker_hands if (run != null and run.poker_hands != null) else PokerHands.new()
+	var best_combo_indices: Array = BotController.find_best_5_cards(hand_cards, p_hands)
+	
+	# Deselect all currently selected cards
+	for c in hand_cards:
+		if c.is_selected:
+			c.set_selected(false)
+			
+	# Select the best 5 cards
+	for idx in best_combo_indices:
+		if idx >= 0 and idx < hand_cards.size():
+			hand_cards[idx].set_selected(true)
+			
+	var sm = _get_sound_manager()
+	if sm != null:
+		sm.play_card_click()
+	trigger_screen_shake(0.2)
 
 func _build_deck() -> void:
 	deck.clear()
@@ -425,6 +453,9 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventKey and event.pressed and event.keycode == KEY_D:
 		if not selected_cards.is_empty() and discards_left > 0:
 			_on_discard_pressed()
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_B:
+		if not victory_modal.visible:
+			_on_bot_assist_pressed()
 
 func _evaluate_selected_cards() -> void:
 	var count: int = selected_cards.size()
@@ -439,7 +470,8 @@ func _evaluate_selected_cards() -> void:
 		discard_button.text = "BỎ LÁ (D) [%d]" % discards_left
 		return
 		
-	var eval: Dictionary = HandEvaluator.evaluate(selected_cards)
+	var p_hands: PokerHands = run.poker_hands if (run != null and run.poker_hands != null) else PokerHands.new()
+	var eval: Dictionary = p_hands.evaluate(selected_cards)
 	var j_bonus: Dictionary = _calculate_joker_contributions(eval["scoring_cards"], eval["name"])
 	
 	var total_chips: int = eval["total_chips"] + j_bonus["bonus_chips"]
@@ -447,7 +479,8 @@ func _evaluate_selected_cards() -> void:
 	var total_xmult: float = j_bonus["bonus_xmult"]
 	var projected_score: int = int(round(total_chips * total_mult * total_xmult))
 	
-	scoring_hud.update_display(eval["name"], 1, total_chips, total_mult, total_xmult, true)
+	var display_name: String = "%s (Lvl %d)" % [eval.get("vi_name", eval["name"]), eval.get("level", 1)]
+	scoring_hud.update_display(display_name, eval.get("level", 1), total_chips, total_mult, total_xmult, true)
 	
 	var xmult_str: String = (" × x%.1f" % total_xmult) if total_xmult > 1.0 else ""
 	var trigger_str: String = " | " + " · ".join(j_bonus["triggers"]) if not j_bonus["triggers"].is_empty() else ""
@@ -468,7 +501,8 @@ func _on_play_hand_pressed() -> void:
 	if hands_left <= 0:
 		return
 		
-	var eval: Dictionary = HandEvaluator.evaluate(selected_cards)
+	var p_hands: PokerHands = run.poker_hands if (run != null and run.poker_hands != null) else PokerHands.new()
+	var eval: Dictionary = p_hands.evaluate(selected_cards)
 	
 	# Validate boss rules
 	var round_context = {
@@ -485,6 +519,7 @@ func _on_play_hand_pressed() -> void:
 
 	hands_left -= 1
 	played_hands_this_round.append(eval["name"])
+	p_hands.record_play(eval["name"])
 	for c in selected_cards:
 		played_cards_history.append({"rank": c.rank, "suit": c.suit})
 	var j_bonus: Dictionary = _calculate_joker_contributions(eval["scoring_cards"], eval["name"])
@@ -503,7 +538,8 @@ func _on_play_hand_pressed() -> void:
 		run.hands_left = hands_left
 		run.money = money
 	
-	scoring_hud.update_display(eval["name"], 1, final_chips, final_mult, final_xmult, false)
+	var display_name: String = "%s (Lvl %d)" % [eval.get("vi_name", eval["name"]), eval.get("level", 1)]
+	scoring_hud.update_display(display_name, eval.get("level", 1), final_chips, final_mult, final_xmult, false)
 	scoring_hud.pop_score_animation()
 	
 	var sm = get_node_or_null("/root/SoundManager")
@@ -526,7 +562,7 @@ func _on_play_hand_pressed() -> void:
 	# Broadcast combo trace
 	var j_names: String = " + ".join(j_bonus["triggers"]) if not j_bonus["triggers"].is_empty() else "Cơ bản"
 	scoring_trace_label.text = "💥 %s! (%d Chips × %.1f Mult%s) ➔ KÍCH HOẠT: %s ➔ +%d ĐIỂM!" % [
-		eval["name"], final_chips, final_mult, (" × x%.1f" % final_xmult if final_xmult > 1.0 else ""), j_names, scored_points
+		display_name, final_chips, final_mult, (" × x%.1f" % final_xmult if final_xmult > 1.0 else ""), j_names, scored_points
 	]
 	scoring_trace_label.modulate = Color(1.0, 0.85, 0.3)
 	

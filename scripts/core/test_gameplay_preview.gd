@@ -49,6 +49,13 @@ func _init() -> void:
 	assert(board.scoring_hud.preview_badge.visible == false, "Preview badge should be hidden when empty")
 	print("[PASS] Unselection verified.")
 	
+	# Test AI Bot Assist (B key / BotAssistButton)
+	assert(board.bot_assist_btn != null, "BotAssistButton must exist")
+	board._on_bot_assist_pressed()
+	assert(board.selected_cards.size() == 5, "Bot Assist must automatically select exactly 5 cards")
+	assert(board.play_button.disabled == false, "Play button must be enabled after Bot Assist")
+	print("[PASS] Bot Assist selected optimal 5 cards: %s" % board.scoring_hud.hand_name_label.text)
+	
 	# Clean up
 	board.queue_free()
 	print("ALL GAMEPLAY BOARD MOONLIT TESTS PASSED 100%!")

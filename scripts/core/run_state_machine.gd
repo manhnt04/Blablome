@@ -63,10 +63,14 @@ var shop_shelf_consumables: Array = []
 var reroll_cost: int = 5
 var last_cashout: Dictionary = {}
 
+# PRNG & Deterministic Seeds (ported from balatro-rs)
+var rng: RandomNumberGenerator = null
+var seed_value: int = 0
+
 func _init() -> void:
 	poker_hands = PokerHands.new()
 
-func start_new_run(p_deck_id: String = "red") -> void:
+func start_new_run(p_deck_id: String = "red", p_seed: int = 0) -> void:
 	deck_id = p_deck_id
 	ante_current = 1
 	round_number = 1
@@ -79,6 +83,13 @@ func start_new_run(p_deck_id: String = "red") -> void:
 	jokers.clear()
 	consumables.clear()
 	poker_hands.reset_levels()
+	
+	seed_value = p_seed
+	if seed_value != 0:
+		rng = RandomNumberGenerator.new()
+		rng.seed = seed_value
+	else:
+		rng = null
 	
 	# Apply deck modifier
 	var init_state = {
@@ -94,6 +105,16 @@ func start_new_run(p_deck_id: String = "red") -> void:
 	_build_deck()
 	_setup_blind_type(BlindType.SMALL)
 
+func shuffle_array(arr: Array) -> void:
+	if rng != null:
+		for i in range(arr.size() - 1, 0, -1):
+			var j = rng.randi_range(0, i)
+			var temp = arr[i]
+			arr[i] = arr[j]
+			arr[j] = temp
+	else:
+		arr.shuffle()
+
 func _build_deck() -> void:
 	deck.clear()
 	for s in [0, 1, 2, 3]:
@@ -104,7 +125,7 @@ func _build_deck() -> void:
 			elif r == 10 and s == 3:
 				enh = "steel"
 			deck.append({"rank": r, "suit": s, "enhancement": enh, "id": "%d_%d" % [r, s]})
-	deck.shuffle()
+	shuffle_array(deck)
 
 func _setup_blind_type(b_type: BlindType) -> void:
 	blind_type = b_type
@@ -217,10 +238,10 @@ func get_selected_cards() -> Array[Dictionary]:
 			res.append(hand_cards[idx])
 	return res
 
-## Action: Play selected cards
+## Action: Play selected cards (Requires exactly 5 cards)
 func play_hand() -> Dictionary:
-	if stage != Stage.BLIND or selected_indices.is_empty() or hands_left <= 0:
-		return {"success": false, "error": "Invalid state or no cards selected"}
+	if stage != Stage.BLIND or selected_indices.size() != 5 or hands_left <= 0:
+		return {"success": false, "error": "Invalid state or must select exactly 5 cards"}
 		
 	var selected_cards = get_selected_cards()
 	var eval = poker_hands.evaluate(selected_cards)
@@ -239,8 +260,8 @@ func play_hand() -> Dictionary:
 	played_hands_this_round.append(eval["name"])
 	poker_hands.record_play(eval["name"])
 	
-	# Calculate Joker bonuses
-	var j_bonus = _calculate_joker_bonuses(eval["scoring_cards"])
+	# Calculate Joker bonuses using dynamic JokerRuntime
+	var j_bonus = _calculate_joker_bonuses(eval["scoring_cards"], eval["name"])
 	var total_chips = eval["total_chips"] + j_bonus["bonus_chips"]
 	var total_mult = eval["mult"] + j_bonus["bonus_mult"]
 	var total_xmult = j_bonus["bonus_xmult"]
@@ -374,45 +395,27 @@ func next_round_from_shop() -> void:
 			return
 		_setup_blind_type(BlindType.SMALL)
 
-func _calculate_joker_bonuses(scoring_cards: Array) -> Dictionary:
-	var bonus_chips: int = 0
-	var bonus_mult: float = 0.0
-	var bonus_xmult: float = 1.0
-	var triggers: Array[String] = []
-	
-	for j in jokers:
-		var j_id: String = j.get("id", "")
-		var j_name: String = j.get("name", "Joker")
-		
-		# Sample original & anime jokers
-		if j_id == "j_joker" or j_name == "Joker":
-			bonus_mult += 4.0
-			triggers.append("🃏 Joker (+4 Mult)")
-		elif j_id == "j_lusty_joker" or j_name.contains("Tiêu Viêm"):
-			var count = 0
-			for c in scoring_cards:
-				if c.get("suit") == 0: count += 1
-			if count > 0:
-				var m = count * 4.0
-				bonus_mult += m
-				triggers.append("🔥 Tiêu Viêm (+%d Mult)" % int(m))
-		elif j_name.contains("Saitama") or j_id == "j_half_joker":
-			if scoring_cards.size() <= 3:
-				bonus_mult += 20.0
-				triggers.append("👊 Half/Saitama (+20 Mult)")
-		elif j_name.contains("Ainz"):
-			bonus_xmult *= 1.5
-			triggers.append("🌑 Ainz (x1.5 Mult)")
-		elif j_name.contains("Goku"):
-			bonus_mult += 10.0
-			triggers.append("📈 Goku (+10 Mult)")
-			
-	return {
-		"bonus_chips": bonus_chips,
-		"bonus_mult": bonus_mult,
-		"bonus_xmult": bonus_xmult,
-		"triggers": triggers
+## Action: Reorder Jokers (trigger order matters for xMult)
+func reorder_jokers(from_idx: int, to_idx: int) -> bool:
+	if from_idx < 0 or from_idx >= jokers.size() or to_idx < 0 or to_idx >= jokers.size():
+		return false
+	var j = jokers[from_idx]
+	jokers.remove_at(from_idx)
+	jokers.insert(to_idx, j)
+	return true
+
+func _calculate_joker_bonuses(scoring_cards: Array, hand_name: String = "") -> Dictionary:
+	var held_cards: Array = []
+	for i in range(hand_cards.size()):
+		if not selected_indices.has(i):
+			held_cards.append(hand_cards[i])
+	var ctx = {
+		"hands_left": hands_left,
+		"discards_left": discards_left,
+		"money": money,
+		"held_cards": held_cards
 	}
+	return JokerRuntime.calculate_hand_bonuses(jokers, scoring_cards, hand_name, ctx)
 
 ## Serializes state into dictionary suitable for AI bot / Gym environment
 func serialize_state() -> Dictionary:

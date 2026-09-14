@@ -478,6 +478,12 @@ custom_minimum_size = Vector2(130, 42)
 layout_mode = 2
 text = "SẮP XẾP: SỐ"
 
+[node name="BotAssistButton" type="Button" parent="MainLayout/CenterArea/BottomActionBar/ActionHBox/SortGroup"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 42)
+layout_mode = 2
+text = "🤖 AI GỢI Ý (B)"
+
 [node name="VictoryModal" type="PanelContainer" parent="."]
 unique_name_in_owner = true
 visible = false

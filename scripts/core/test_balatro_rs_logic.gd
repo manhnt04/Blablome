@@ -9,6 +9,7 @@ func _init() -> void:
 	_test_run_state_machine_cycle()
 	_test_action_generator_legality()
 	_test_bot_simulation()
+	_test_seeded_rng_replayability()
 	
 	print("==================================================")
 	print(">>> ALL BALATRO-RS LOGIC TESTS PASSED 100%! <<<")
@@ -122,22 +123,30 @@ func _test_run_state_machine_cycle() -> void:
 	assert(sm.hand_cards.size() == 8, "Hand cards must be 8")
 	print("  ✓ Select Blind: Hand size %d, Hands left %d" % [sm.hand_cards.size(), sm.hands_left])
 	
-	# Select 3 cards & Play Hand
+	# Test: Selecting < 5 cards fails to play
 	sm.select_card(0)
 	sm.select_card(1)
 	sm.select_card(2)
-	assert(sm.selected_indices.size() == 3, "3 cards must be selected")
+	assert(sm.selected_indices.size() == 3, "3 cards selected")
+	var fail_res = sm.play_hand()
+	assert(fail_res["success"] == false, "Playing < 5 cards must fail")
+	
+	# Select 2 more cards to reach 5 cards
+	sm.select_card(3)
+	sm.select_card(4)
+	assert(sm.selected_indices.size() == 5, "5 cards must be selected")
 	
 	var res = sm.play_hand()
-	assert(res["success"] == true, "Play hand must succeed")
+	assert(res["success"] == true, "Play hand with 5 cards must succeed")
 	assert(sm.hands_left == 3, "Hands left must decrement to 3")
 	assert(sm.hand_cards.size() == 8, "Hand cards must be replenished to 8")
-	print("  ✓ Play Hand: Scored %d with %s. Score: %d/%d" % [res["scored_points"], res["hand_name"], sm.current_score, sm.target_score])
+	print("  ✓ Play Hand (5 cards): Scored %d with %s. Score: %d/%d" % [res["scored_points"], res["hand_name"], sm.current_score, sm.target_score])
 	
 	# Force reach target score to test POST_BLIND
-	sm.current_score = sm.target_score + 50
-	# Trigger round end check via play
-	sm.select_card(0)
+	sm.current_score = sm.target_score - 10
+	# Trigger round end check via 5-card play
+	for i in range(5):
+		sm.select_card(i)
 	var win_res = sm.play_hand()
 	assert(sm.stage == RunStateMachine.Stage.POST_BLIND, "Stage must become POST_BLIND upon reaching target")
 	print("  ✓ Target achieved! Stage transitioned to POST_BLIND.")
@@ -194,3 +203,24 @@ func _test_bot_simulation() -> void:
 	])
 	if not sim["logs"].is_empty():
 		print("  ✓ Sample Bot play log: %s" % sim["logs"][0])
+
+func _test_seeded_rng_replayability() -> void:
+	print("\n[TEST 5] Testing Seeded PRNG Deterministic Replayability...")
+	var sm1 = RunStateMachine.new()
+	sm1.start_new_run("red", 12345678)
+	
+	var sm2 = RunStateMachine.new()
+	sm2.start_new_run("red", 12345678)
+	
+	assert(sm1.deck.size() == sm2.deck.size(), "Decks must be same size")
+	for i in range(sm1.deck.size()):
+		assert(sm1.deck[i]["rank"] == sm2.deck[i]["rank"] and sm1.deck[i]["suit"] == sm2.deck[i]["suit"],
+			"Seeded PRNG cards must match 100%% at index %d" % i)
+			
+	sm1.select_blind()
+	sm2.select_blind()
+	for i in range(sm1.hand_cards.size()):
+		assert(sm1.hand_cards[i]["rank"] == sm2.hand_cards[i]["rank"] and sm1.hand_cards[i]["suit"] == sm2.hand_cards[i]["suit"],
+			"Seeded drawn cards must match 100%% at index %d" % i)
+			
+	print("  ✓ Seed 12345678 produced identical deck and hand across both runs (100% Deterministic)!")
