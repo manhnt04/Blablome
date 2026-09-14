@@ -1,8 +1,6 @@
 class_name CollectionScreen
 extends Control
 
-const JokerDB = preload("res://scripts/core/joker_db.gd")
-
 signal back_requested()
 
 var all_items: Array = []
@@ -19,6 +17,7 @@ var current_filter: String = "All"
 
 func _ready() -> void:
 	back_btn.pressed.connect(func():
+		back_requested.emit()
 		get_tree().change_scene_to_file("res://scenes/screens/main_menu.tscn")
 	)
 	

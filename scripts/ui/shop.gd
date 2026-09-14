@@ -1,8 +1,6 @@
 class_name ShopScreen
 extends Control
 
-const JokerDB = preload("res://scripts/core/joker_db.gd")
-
 signal next_blind_requested()
 
 var money: int = 27
@@ -18,6 +16,7 @@ func _ready() -> void:
 	_update_hud()
 	reroll_btn.pressed.connect(_on_reroll_pressed)
 	next_blind_btn.pressed.connect(func():
+		next_blind_requested.emit()
 		get_tree().change_scene_to_file("res://scenes/screens/blind_select.tscn")
 	)
 	if has_node("%BuyPackBtn1"):

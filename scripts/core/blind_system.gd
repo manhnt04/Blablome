@@ -57,15 +57,18 @@ static func calculate_cashout(blind_type: BlindType, current_money: int, remaini
 	else:
 		# Standard Balatro rule: +$1 per remaining hand, +$1 per $5 up to interest cap
 		hand_bonus = remaining_hands * 1
-		var raw_interest: int = int(current_money / 5)
+		var raw_interest: int = int(float(current_money) / 5.0)
 		interest_bonus = mini(interest_cap, maxi(0, raw_interest))
 		
 	var total_cashout: int = base_reward + hand_bonus + discard_bonus + interest_bonus
 	
 	return {
 		"base_reward": base_reward,
+		"blind_reward": base_reward,
 		"hand_bonus": hand_bonus,
+		"hands_bonus": hand_bonus,
 		"discard_bonus": discard_bonus,
 		"interest_bonus": interest_bonus,
-		"total_payout": total_cashout
+		"total_payout": total_cashout,
+		"total_earned": total_cashout
 	}

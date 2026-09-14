@@ -423,7 +423,7 @@ func _update_hud() -> void:
 	top_score_bar.value = current_score
 	
 	top_money_label.text = "🪙 $%d" % money
-	var interest: int = min(5, money / 5)
+	var interest: int = min(5, int(float(money) / 5.0))
 	top_interest_label.text = "Lợi tức: +$%d" % interest
 	
 	if boss_banner != null:
@@ -446,7 +446,7 @@ func _check_round_end() -> void:
 func _show_victory() -> void:
 	victory_title.text = "🎉 CHIẾN THẮNG BLIND!"
 	victory_title.modulate = Color("#4dd97a")
-	var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, hands_left, money, is_green_deck)
+	var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, money, hands_left, discards_left, is_green_deck)
 	next_shop_btn.text = "TIẾP TỤC ĐẾN SHOP (+$%d: Cơ bản $%d, Tay thừa $%d, Lãi $%d)" % [
 		payout["total_earned"], payout["blind_reward"], payout["hands_bonus"], payout["interest_bonus"]
 	]
@@ -460,7 +460,7 @@ func _show_defeat() -> void:
 
 func _on_next_shop_pressed() -> void:
 	if current_score >= target_score:
-		var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, hands_left, money, is_green_deck)
+		var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, money, hands_left, discards_left, is_green_deck)
 		money += payout["total_earned"]
 		
 		# Blind Progression
@@ -472,6 +472,7 @@ func _on_next_shop_pressed() -> void:
 			ante_current += 1
 			blind_type = BlindSystem.BlindType.SMALL
 			
+		run_to_shop_requested.emit()
 		get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
 	else:
 		get_tree().change_scene_to_file("res://scenes/screens/game_over.tscn")

@@ -17,9 +17,11 @@ var duration_str: String = "24 phút"
 
 func _ready() -> void:
 	play_again_btn.pressed.connect(func():
+		restart_run_requested.emit()
 		get_tree().change_scene_to_file("res://scenes/screens/character_select.tscn")
 	)
 	main_menu_btn.pressed.connect(func():
+		main_menu_requested.emit()
 		get_tree().change_scene_to_file("res://scenes/screens/main_menu.tscn")
 	)
 	_update_visuals()

@@ -1,8 +1,6 @@
 class_name PackOpening
 extends Control
 
-const JokerDB = preload("res://scripts/core/joker_db.gd")
-
 signal card_selected(card_data: Dictionary)
 signal pack_skipped()
 
