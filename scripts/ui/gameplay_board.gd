@@ -3,6 +3,9 @@ extends Control
 
 const GameConstants = preload("res://scripts/core/game_constants.gd")
 const HandEvaluator = preload("res://scripts/core/hand_evaluator.gd")
+const BlindSystem = preload("res://scripts/core/blind_system.gd")
+const BossEngine = preload("res://scripts/core/boss_engine.gd")
+const DeckManager = preload("res://scripts/core/deck_manager.gd")
 const PlayingCard = preload("res://scripts/ui/playing_card.gd")
 const JokerCard = preload("res://scripts/ui/joker_card.gd")
 const ScoringHUD = preload("res://scripts/ui/scoring_hud.gd")
@@ -10,19 +13,25 @@ const ScoringHUD = preload("res://scripts/ui/scoring_hud.gd")
 signal run_to_shop_requested()
 signal pause_requested()
 
-# Run State
-var ante_current: int = 3
+# Run State (Ported from Balatro GBA / balatro-web)
+var ante_current: int = 1
 var ante_max: int = 8
+var blind_type: int = BlindSystem.BlindType.SMALL
 var blind_name: String = "Small Blind"
 var is_boss_blind: bool = false
-var boss_debuff_suit: int = GameConstants.Suit.WIND
-var target_score: int = 600
+var active_boss_id: String = ""
+var active_boss_data: Dictionary = {}
+var active_deck_id: String = "red"
+var is_green_deck: bool = false
+var target_score: int = 300
 var current_score: int = 0
-var money: int = 23
+var money: int = 4
 var hands_left: int = 4
 var hands_max: int = 4
 var discards_left: int = 3
 var discards_max: int = 3
+var played_hands_this_round: Array[String] = []
+var played_cards_history: Array[Dictionary] = []
 
 # Card Management
 var deck: Array[Dictionary] = []
@@ -72,10 +81,55 @@ func _ready() -> void:
 	%PauseButton.pressed.connect(func(): pause_requested.emit())
 	
 	victory_modal.visible = false
+	_apply_deck_settings()
+	_setup_current_blind()
 	_build_deck()
 	_init_mock_jokers()
 	_update_hud()
 	_deal_initial_hand()
+
+func _apply_deck_settings() -> void:
+	var init_state = {
+		"hands_max": 4,
+		"discards_max": 3,
+		"money": 4,
+		"hand_size": 8
+	}
+	var modded = DeckManager.apply_deck_to_state(active_deck_id, init_state)
+	hands_max = modded["hands_max"]
+	hands_left = hands_max
+	discards_max = modded["discards_max"]
+	discards_left = discards_max
+	money = modded["money"]
+	is_green_deck = modded["is_green_deck"]
+
+func _setup_current_blind() -> void:
+	is_boss_blind = (blind_type == BlindSystem.BlindType.BOSS)
+	if is_boss_blind:
+		active_boss_data = BossEngine.get_random_boss(ante_current)
+		active_boss_id = active_boss_data.get("id", "the_club")
+		blind_name = "Boss: " + active_boss_data.get("name", "Boss Blind")
+	elif blind_type == BlindSystem.BlindType.BIG:
+		blind_name = "Big Blind"
+		active_boss_id = ""
+		active_boss_data = {}
+	else:
+		blind_name = "Small Blind"
+		active_boss_id = ""
+		active_boss_data = {}
+		
+	target_score = BlindSystem.get_blind_target_score(ante_current, blind_type, active_boss_id)
+	current_score = 0
+	hands_left = hands_max
+	discards_left = discards_max
+	played_hands_this_round.clear()
+	
+	# Apply boss round-start modifiers
+	if is_boss_blind:
+		if active_boss_id == "the_water":
+			discards_left = 0
+		elif active_boss_id == "the_needle":
+			hands_left = 1
 
 func _process(delta: float) -> void:
 	# Balatro Trauma-based Screen/Board Shake
@@ -134,13 +188,17 @@ func _deal_initial_hand() -> void:
 	_draw_cards(8)
 
 func _draw_cards(count: int) -> void:
+	var round_context = {
+		"played_cards_history": played_cards_history,
+		"joker_sold_this_blind": false
+	}
 	for i in range(count):
 		if deck.is_empty():
 			_build_deck()
 		var card_data = deck.pop_back()
 		var card_instance = CARD_SCENE.instantiate()
 		hand_container.add_child(card_instance)
-		var is_debuffed: bool = is_boss_blind and (card_data["suit"] == boss_debuff_suit)
+		var is_debuffed: bool = is_boss_blind and BossEngine.is_card_debuffed(card_data, active_boss_id, round_context)
 		card_instance.setup(card_data["rank"], card_data["suit"], card_data.get("enhancement", ""), is_debuffed)
 		card_instance.selection_changed.connect(_on_card_selection_changed)
 		hand_cards.append(card_instance)
@@ -256,8 +314,25 @@ func _on_play_hand_pressed() -> void:
 	if selected_cards.is_empty() or hands_left <= 0:
 		return
 		
-	hands_left -= 1
 	var eval: Dictionary = HandEvaluator.evaluate(selected_cards)
+	
+	# Validate boss rules
+	var round_context = {
+		"played_hands_this_round": played_hands_this_round,
+		"discards_left": discards_left,
+		"hands_left": hands_left
+	}
+	var val_res = BossEngine.validate_hand_play(selected_cards, eval["name"], active_boss_id, round_context)
+	if not val_res.get("allowed", true):
+		scoring_trace_label.text = "⛔ BỊ CHẶN BỞI BOSS: %s!" % val_res.get("reason", "Không thể đánh bài này")
+		scoring_trace_label.modulate = Color(1.0, 0.25, 0.25)
+		trigger_screen_shake(0.4)
+		return
+
+	hands_left -= 1
+	played_hands_this_round.append(eval["name"])
+	for c in selected_cards:
+		played_cards_history.append({"rank": c.rank, "suit": c.suit})
 	var j_bonus: Dictionary = _calculate_joker_contributions(eval["scoring_cards"])
 	
 	var final_chips: int = eval["total_chips"] + j_bonus["bonus_chips"]
@@ -363,7 +438,7 @@ func _update_hud() -> void:
 	if boss_banner != null:
 		boss_banner.visible = is_boss_blind
 		if is_boss_blind:
-			boss_warning_label.text = "⚠️ QUY TẮC BOSS: Tất cả lá Phong (Wind) bị vô hiệu hóa!"
+			boss_warning_label.text = "⚠️ QUY TẮC BOSS: " + active_boss_data.get("desc", "Quy tắc đặc biệt!")
 			
 	if deck_counter_label != null:
 		deck_counter_label.text = "🃏 Nọc: %d/52" % deck.size()
@@ -380,9 +455,10 @@ func _check_round_end() -> void:
 func _show_victory() -> void:
 	victory_title.text = "🎉 CHIẾN THẮNG BLIND!"
 	victory_title.modulate = Color("#4dd97a")
-	var interest: int = min(5, money / 5)
-	var reward: int = 4 + interest
-	next_shop_btn.text = "TIẾP TỤC ĐẾN SHOP (Thưởng +$%d)" % reward
+	var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, hands_left, money, is_green_deck)
+	next_shop_btn.text = "TIẾP TỤC ĐẾN SHOP (+$%d: Cơ bản $%d, Tay thừa $%d, Lãi $%d)" % [
+		payout["total_earned"], payout["blind_reward"], payout["hands_bonus"], payout["interest_bonus"]
+	]
 	victory_modal.visible = true
 
 func _show_defeat() -> void:
@@ -393,9 +469,18 @@ func _show_defeat() -> void:
 
 func _on_next_shop_pressed() -> void:
 	if current_score >= target_score:
-		var interest: int = min(5, money / 5)
-		money += 4 + interest
+		var payout: Dictionary = BlindSystem.calculate_cashout(blind_type, hands_left, money, is_green_deck)
+		money += payout["total_earned"]
+		
+		# Blind Progression
+		if blind_type == BlindSystem.BlindType.SMALL:
+			blind_type = BlindSystem.BlindType.BIG
+		elif blind_type == BlindSystem.BlindType.BIG:
+			blind_type = BlindSystem.BlindType.BOSS
+		elif blind_type == BlindSystem.BlindType.BOSS:
+			ante_current += 1
+			blind_type = BlindSystem.BlindType.SMALL
+			
 		get_tree().change_scene_to_file("res://scenes/screens/shop.tscn")
 	else:
 		get_tree().change_scene_to_file("res://scenes/screens/game_over.tscn")
-

@@ -1,7 +1,10 @@
 class_name JokerDB
 extends RefCounted
 
-const JSON_PATH = "res://data/jokers_v1.json"
+const JSON_PATHS: Array[String] = [
+	"res://data/jokers_v1.json",
+	"res://data/jokers_original.json"
+]
 
 static var _cached_jokers: Array = []
 static var _jokers_by_id: Dictionary = {}
@@ -18,48 +21,53 @@ static func ensure_loaded() -> void:
 	if _is_initialized:
 		return
 		
-	if not FileAccess.file_exists(JSON_PATH):
-		push_error("JokerDB: JSON file not found at " + JSON_PATH)
-		return
-		
-	var file = FileAccess.open(JSON_PATH, FileAccess.READ)
-	var content = file.get_as_text()
-	file.close()
-	
-	var json = JSON.new()
-	var err = json.parse(content)
-	if err != OK:
-		push_error("JokerDB: Failed to parse JSON error %s at line %d" % [json.get_error_message(), json.get_error_line()])
-		return
-		
-	var data = json.data
-	if not (data is Array):
-		push_error("JokerDB: JSON root is not an array")
-		return
-		
-	_cached_jokers = data
+	_cached_jokers.clear()
 	_jokers_by_id.clear()
 	for k in _jokers_by_rarity.keys():
 		_jokers_by_rarity[k] = []
 	_jokers_by_archetype.clear()
 	
-	for joker in _cached_jokers:
-		var j_id: String = joker.get("joker_id", "")
-		var rarity: String = joker.get("rarity", "common").to_lower()
-		var archetype: String = joker.get("archetype", "")
+	for path in JSON_PATHS:
+		if not FileAccess.file_exists(path):
+			continue
+			
+		var file = FileAccess.open(path, FileAccess.READ)
+		var content = file.get_as_text()
+		file.close()
 		
-		if j_id != "":
+		var json = JSON.new()
+		var err = json.parse(content)
+		if err != OK:
+			push_error("JokerDB: Failed to parse %s" % path)
+			continue
+			
+		var data = json.data
+		var list: Array = []
+		if data is Array:
+			list = data
+		elif data is Dictionary and data.has("jokers") and data["jokers"] is Array:
+			list = data["jokers"]
+			
+		for joker in list:
+			var j_id: String = joker.get("joker_id", joker.get("id", ""))
+			if j_id == "":
+				continue
+			joker["joker_id"] = j_id # Normalize
+			var rarity: String = joker.get("rarity", "common").to_lower()
+			var archetype: String = joker.get("archetype", "")
+			
+			_cached_jokers.append(joker)
 			_jokers_by_id[j_id] = joker
 			
-		if _jokers_by_rarity.has(rarity):
-			_jokers_by_rarity[rarity].append(joker)
+			if _jokers_by_rarity.has(rarity):
+				_jokers_by_rarity[rarity].append(joker)
+				
+			if not _jokers_by_archetype.has(archetype):
+				_jokers_by_archetype[archetype] = []
+			_jokers_by_archetype[archetype].append(joker)
 			
-		if not _jokers_by_archetype.has(archetype):
-			_jokers_by_archetype[archetype] = []
-		_jokers_by_archetype[archetype].append(joker)
-		
 	_is_initialized = true
-	print("JokerDB: Loaded %d jokers successfully." % _cached_jokers.size())
+	print("JokerDB: Loaded %d total jokers (Anime + Original Balatro)." % _cached_jokers.size())
 
 static func get_all_jokers() -> Array:
 	ensure_loaded()
